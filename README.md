@@ -1,4 +1,6 @@
 opusenc.js
 ==========
 
-JavaScript opus encoder
+JavaScript Opus Encoder
+----
+[demo](https://rawgit.com/Rillke/opusenc.js/master/iframe.html)
