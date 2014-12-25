@@ -201,7 +201,7 @@ For every other file included in this repository, its license is provided within
 Patent licenses
 ====================================================================
 
-Four companies that did not directly participate in the development of Opus, Qualcomm, Huawei, France Telecom, and Ericsson, filed IPR disclosures with potentially royalty-bearing terms.
+Four companies that did not directly participate in the development of Opus, Qualcomm, Huawei, France Telecom, and Ericsson, filed [IPR disclosures](https://datatracker.ietf.org/ipr/search/?draft=&rfc=6716&submit=rfc) with potentially royalty-bearing terms.
 
 Xiph.Org
 --------------------------------------------------------------------
