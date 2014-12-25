@@ -46,6 +46,8 @@
     var f = this.files[0],
       fr = new FileReader();
 
+    $input.attr( 'disabled', 'disabled' );
+
     fr.addEventListener( 'loadend', function() {
       worker.postMessage( {
         command: 'encode',
