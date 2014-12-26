@@ -4,11 +4,37 @@
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Opusenc.js : JavaScript opus encoder">
+    <meta name="description" content="Opusenc.js : JavaScript Opus Encoder">
+    <link rel="shortcut icon" href="favicon.ico" />
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery-ui.js"></script>
+    
+    <link rel="stylesheet" type="text/css" media="screen" href="css/gh.css">
+    <link href="css/jquery-ui.css" rel="stylesheet">
+    <script src="js/modernizr.custom.js"></script>
+    
+    <link href="css/jquery.tagit.css" rel="stylesheet" type="text/css">
+    <script src="js/tag-it.js"></script>
 
     <title>Opusenc.js</title>
+
+<style>
+.oe-js-yes, .oe-pm-yes, .oe-ww-yes, .oe-bc-yes {
+  display: none;
+}
+
+.oe-js-no, .oe-pm-no, .oe-ww-no, .oe-bc-no {
+  display: inline-block;
+}
+.js .oe-js-no, .postmessage .oe-pm-no, .webworkers .oe-ww-no, .blobconstructor .oe-bc-no {
+  display: none;
+}
+.js .oe-js-yes, .postmessage .oe-pm-yes, .webworkers .oe-ww-yes, .blobconstructor .oe-bc-yes {
+  display: inline-block;
+}
+</style>
+
   </head>
 
   <body>
@@ -31,37 +57,31 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h3>
-<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+        <h2>
+<a id="opusenc.js-demo" class="anchor" href="#opusenc.js-demo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demo</h2>
+<p>Try Opusenc.js, right here, right now.</p>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
-
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
-
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
-
+<section id="oe-browser-support">
 <h3>
-<a id="designer-templates" class="anchor" href="#designer-templates" aria-hidden="true"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<a id="opusenc.js-browser-support" class="anchor" href="#opusenc.js-browser-support" aria-hidden="true"><span class="octicon octicon-link"></span></a>Browser support</h3>
+<p>In order to run Opusenc in a browser, there has to be support for a couple of HTML5 features.</p>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<code><span class="ui-icon ui-icon-alert oe-js-no"></span><span class="ui-icon ui-icon-check oe-js-yes"></span> JavaScript</code> 
+<code><span class="ui-icon ui-icon-alert oe-pm-no"></span><span class="ui-icon ui-icon-check oe-pm-yes"></span> PostMessage</code> 
+<code><span class="ui-icon ui-icon-alert oe-ww-no"></span><span class="ui-icon ui-icon-check oe-ww-yes"></span> WebWorkers</code> 
+<code><span class="ui-icon ui-icon-alert oe-bc-no"></span><span class="ui-icon ui-icon-check oe-bc-yes"></span> Blob constructor</code>
 
-<h3>
-<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+</section>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>
-<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>
-<a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="https://help.github.com/pages">https://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<section id="oe-command-line-options">
+<h3><a id="opusenc.js-cmd-switches" class="anchor" href="#opusenc.js-cmd-switches" aria-hidden="true"><span class="octicon octicon-link"></span></a>Command line switches</h3>
+<input name="tags" id="oe-cmd-options" value="" placeholder="(e.g. in.wav out.opus --quiet)" style="width: 99%">
+</section>
+<div>&nbsp;</div>
+<div style="position:relative; width: 7em; height: 5em; overflow: hidden;">
+<button id="oe-run-button" style="position:absolute; top:0; left: 0; z-index: 0" type="button" title="Run Opusenc">Run</button>
+<input  id="oe-run-file" style="position:absolute; top:-30px; left: -30px; z-index: 2; font-size: 70px; cursor: pointer; opacity: 0" id="oe-cmd-fileinput" autofocus="" type="file"  title="Run Opusenc" />
+</div>
       </section>
     </div>
 
@@ -69,20 +89,315 @@ $ git checkout gh-pages
     <div id="footer_wrap" class="outer">
       <footer class="inner">
         <p class="copyright">Opusenc.js maintained by <a href="https://github.com/Rillke">Rillke</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
 
-              <script type="text/javascript">
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-          </script>
-          <script type="text/javascript">
-            try {
-              var pageTracker = _gat._getTracker("UA-9724529-2");
-            pageTracker._trackPageview();
-            } catch(err) {}
-          </script>
+<script type="text/javascript">
+var tags = {
+  'quiet': {},
+  'bitrate': {
+    'fmt': 'n.nnn',
+    'desc': 'Target bitrate in kbit/sec (6-256/channel)',
+    'constraint': '6-256/channel',
+    'regexp': /^\d+(?:\.\d*)?$/
+  },
+  'hard-cbr': {},
+  'vbr': {},
+  'cvbr': {},
+  'comp': {
+    'fmt': 'n',
+    'desc': 'Encoding complexity (0-10, default: 10 (slowest))',
+    'constraint': '0-10',
+    'regexp': /^(?:\d|10)$/
+  },
+  'complexity': {
+    'fmt': 'n',
+    'desc': 'Encoding complexity (0-10, default: 10 (slowest))',
+    'constraint': '0-10',
+    'regexp': /^(?:\d|10)$/
+  },
+  'framesize': {
+    'fmt': 'n',
+    'desc': 'Maximum frame size in milliseconds (2.5, 5, 10, 20, 40, 60, default: 20)',
+    'constraint': '2.5, 5, 10, 20, 40, 60',
+    'regexp': /^(?:2\.5|5|10|20|40|60)$/
+  },
+  'expect-loss': {
+    'fmt': 'n',
+    'desc': 'Percentage packet loss to expect (default: 0)',
+    'constraint': '0-100',
+    'regexp': /^(?:\d{1,2}|100)$/
+  },
+  'downmix-mono': {},
+  'downmix-stereo': {},
+  'no-downmix': {},
+  'max-delay': {
+    'fmt': 'n',
+    'desc': 'Maximum container delay in milliseconds (0-1000, default: 1000)',
+    'constraint': '0-1000',
+    'regexp': /^(?:[0-9]{1-3}|1000)$/
+  },
+  'serial': {
+    'fmt': 'n',
+    'desc': 'Forces a specific stream serial number',
+    'regexp': /^\d*$/
+  },
+  'save-range': {
+    'fmt': 'file',
+    'desc': 'Saves check values for every frame to a file',
+    'regexp': /.*/
+  },
+  'set-ctl-int': {
+    'fmt': 'x=y',
+    'desc': 'Pass the encoder control x with value y (advanced)\n' +
+      'Preface with s: to direct the ctl to multistream s\n' +
+      'This may be used multiple times',
+    'regexp': /.*/
+  },
+  'help': {
+    'short': 'h'
+  },
+  'raw': {},
+  'raw-bits': {
+    'fmt': 'n',
+    'desc': 'Set bits/sample for raw input (8, 16 or 24; default: 16)',
+    'constraint': '8, 16 or 24',
+    'regexp': /^(?:8|16|24)$/
+  },
+  'raw-rate': {
+    'fmt': 'n',
+    'desc': 'Set sampling rate for raw input (8000, 12000, 16000, 24000, 48000; default: 48000)',
+    'constraint': '8000, 12000, 16000, 24000, 48000',
+    'regexp': /^(?:8|12|16|24|48)000$/
+  },
+  'raw-chan': {
+    'fmt': 'n',
+    'desc': 'Set number of channels for raw input (default: 2)',
+    'regexp': /^\d+$/
+  },
+  'raw-endianness': {
+    'fmt': 'n',
+    'desc': '1 for bigendian, 0 for little (defaults to 0)',
+    'constraint': '0 or 1',
+    'regexp': /^(?:1|0)$/
+  },
+  'ignorelength': {},
+  'version': {
+    'short': 'V'
+  },
+  'version-short': {},
+  'comment': {
+    'fmt': 'string',
+    'desc': 'Add the given string as an extra comment\n' +
+      'This may be used multiple times',
+    'regexp': /.*/
+  },
+  'artist': {
+    'fmt': 'string',
+    'desc': 'Author of this track',
+    'regexp': /./
+  },
+  'title': {
+    'fmt': 'string',
+    'desc': 'Title for this track',
+    'regexp': /./
+  },
+  'album': {
+    'fmt': 'string',
+    'desc': 'Album or collection this track belongs to',
+    'regexp': /.*/
+  },
+  'date': {
+    'fmt': 'string',
+    'desc': 'Date for this track',
+    'regexp': /.*/
+  },
+  'genre': {
+    'fmt': 'string',
+    'desc': 'Genre for this track',
+    'regexp': /.*/
+  },
+  'picture': {
+    'desc': 'Album art for this track\n' +
+      'More than one --picture option can be specified.\n' +
+      'Either a FILENAME for the picture file or a more\n' +
+      'complete SPECIFICATION form can be used. The\n' +
+      'SPECIFICATION is a string whose parts are\n' +
+      'separated by | (pipe) characters. Some parts may\n' +
+      'be left empty to invoke default values. A\n' +
+      'FILENAME is just shorthand for \"||||FILENAME\".\n' +
+      'The format of SPECIFICATION is\n' +
+      '\n' +
+      '[TYPE]|[MIME-TYPE]|[DESCRIPTION]|[WIDTHxHEIGHT\n' +
+      'xDEPTH[/COLORS]]|FILENAME\n' +
+      '\n' +
+      'TYPE is an optional number from one of:\n' +
+      '0: Other\n' +
+      '...',
+    'fmt': 'file',
+    'infile': 1
+  },
+  'padding': {
+    'fmt': 'n',
+    'desc': 'Extra bytes to reserve for metadata (default: 512)',
+    'regexp': /^\d+$/
+  },
+  'discard-comments': {},
+  'discard-pictures': {}
+};
+
+var $cmd = $('#oe-cmd-options'),
+  availableTags = $.map(tags, function(tagDetails, tag) {
+    var ret = ['--' + tag];
+    if (tagDetails.short) {
+      ret.push('-' + tagDetails.short);
+    }
+    return ret;
+  });
+
+$cmd.tagit({
+  placeholderText: 'Type for suggestions',
+  availableTags: availableTags,
+  removeConfirmation: true,
+  allowSpaces: true,
+  beforeTagAdded: function(e, ui) {
+    if (ui.duringInitialization) return;
+    var tagInfo = tags[ui.tagLabel.replace('--', '')];
+    if (!tagInfo || !tagInfo.fmt) return;
+    var $dlg = $('<form>'),
+      $submit = $('<input type="submit" value="Submit" />')
+        .fadeTo(0, 0)
+        .appendTo($dlg),
+      $pre = $('<pre>')
+        .css('width', '90%')
+        .text(tagInfo.desc)
+        .appendTo($dlg),
+      $input = $('<input>')
+        .attr({
+          'pattern': tagInfo.regexp.toString().replace(/^\/(.+)\/$/, '$1'),
+          'required': 'required',
+          'title': tagInfo.constraint || tagInfo.desc,
+          'value': tagInfo.fmt,
+          'name': 'foobar'
+        })
+        .appendTo($dlg);
+      $dlg.dialog({
+        'title': 'Options for ' + ui.tagLabel,
+        'modal': true,
+        'width': 500,
+        'buttons': {
+          'Okay': function() {
+            if ($input[0].checkValidity()) {
+              $dlg.submit();
+            } else {
+              $('<div>').addClass('ui-state-highlight').text(tagInfo.constraint || tagInfo.desc).insertAfter($input);
+              $input.focus().select();
+            }
+          }
+        },
+        'open': function() {
+          $input.focus().select();
+        },
+        'close': function() {
+          $dlg.remove();
+        }
+      });
+      $dlg.submit(function(e) {
+        e.preventDefault();
+        $cmd.tagit('createTag', $input.val());
+        $dlg.remove();
+        $cmd.focus().next().find('.tagit-new input').focus();
+      });
+  }
+});
+
+var $button = $('#oe-run-button');
+var $fileInput = $('#oe-run-file');
+var $workerDlg = $('<div>');
+var $workerProgress = $('<progress style="display: inline-block; text-align: center; width: 100%;" value="0" max="100">Your browser does not support this tool. Upgrade to a modern browser, please.</progress>')
+  .appendTo($workerDlg);
+var worker = new Worker( 'worker/EmsWorkerProxy.js' );
+
+$button
+  .button({
+    icons: {
+      primary: 'ui-icon-arrowreturnthick-1-e'
+    }
+  });
+
+worker.onmessage = function( e ) {
+  if ( e.data && e.data.reply === 'progress' ) {
+    vals = e.data.values;
+    if ( vals[1] ) {
+      $workerProgress.val( vals[0] / vals[1] * 100  );
+    }
+  } else if ( e.data && e.data.reply === 'done' ) {
+    $workerProgress.val( 100 );
+    $('<a>')
+      .text('encoded.opus')
+      .prop('href', window.URL.createObjectURL( e.data.values[0] ))
+      .attr('download', 'encoded.opus')
+      .attr('style', 'background: url("images/icon_download.png") no-repeat scroll left center transparent; padding-left: 28px;')
+      .insertAfter( $workerProgress );
+    ;
+  }
+};
+
+$fileInput
+  .change(function() {
+    var f = this.files[0],
+      fr = new FileReader();
+
+    $fileInput.attr( 'disabled', 'disabled' );
+
+    fr.addEventListener( 'loadend', function() {
+      $workerDlg.dialog({
+        'modal': true,
+        'closeOnEscape': false,
+        'open': function() {
+          $(this)
+            .dialog('widget')
+            .find('.ui-dialog-titlebar')
+            .hide();
+        }
+      });
+
+      worker.postMessage( {
+        command: 'encode',
+        importRoot: '',
+        args: [
+          'opusenc.js',
+          f.name,
+          f.name + '.opus'
+        ],
+        input: new Uint8Array( fr.result )
+      } );
+    } );
+    fr.readAsArrayBuffer( f );
+  })
+  .focus(function() {
+    $button.triggerHandler('focus');
+  })
+  .blur(function() {
+    $button.triggerHandler('blur');
+  })
+  .mouseenter(function() {
+    $button.triggerHandler('mouseenter');
+  })
+  .mouseout(function() {
+    $button.triggerHandler('mouseout');
+  });
+</script>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-9724529-2");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
 
 
   </body>
