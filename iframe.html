@@ -23,59 +23,72 @@
  * IN THE SOFTWARE.
  */
 -->
+
 <head>
-<title>Opus Encoder</title>
-<meta charset="UTF-8">
-<script src="jquery.min.js"></script>
+	<title>Opus Encoder</title>
+	<meta charset="UTF-8">
+	<script src="jquery.min.js"></script>
 </head>
 
 <body>
-<div id="body-content">
-<h1>Opus encoder</h1>
-<progress style="display: inline-block; text-align: center; width: 100%;" value="0" max="100">Your browser does not support this tool. Upgrade to a modern browser, please.</progress>
-<input id="com-file-analyzer-fileinput" autofocus="" type="file" />
+	<div id="body-content">
+		<h1>Opus encoder</h1>
+		<progress style="display: inline-block; text-align: center; width: 100%;" value="0" max="100">Your browser does not support this tool. Upgrade to a modern browser, please.</progress>
+		<input id="com-file-analyzer-fileinput" autofocus="" type="file" />
 
-<script type='text/javascript'>
+		<script type='text/javascript'>
+			var $prog = $('progress'),
+				$console = $('#console'),
+				$input = $('input'),
+				worker = new Worker('worker/EmsWorkerProxy.js');
 
-  var $prog  = $( 'progress' ),
-    $console = $( '#console' ),
-    $input   = $( 'input' ),
-    worker = new Worker( 'worker/EmsWorkerProxy.js' );
+			$input.change(function() {
+				var f = this.files[0],
+					fr = new FileReader();
 
-  $input.change( function() {
-    var f = this.files[0],
-      fr = new FileReader();
+				$input.attr('disabled', 'disabled');
 
-    $input.attr( 'disabled', 'disabled' );
+				fr.addEventListener('loadend', function() {
+					var args = [
+						f.name,
+						'encoded.opus'
+					];
+					var storedFiles = {};
+					storedFiles[f.name] = new Uint8Array(fr.result);
+					var outData = {
+						'encoded.opus': {
+							'MIME': 'audio/ogg'
+						}
+					};
+					worker.postMessage({
+						command: 'encode',
+						importRoot: '',
+						args: args,
+						outData: outData,
+						fileData: storedFiles
+					});
+				});
+				fr.readAsArrayBuffer(f);
+			});
 
-    fr.addEventListener( 'loadend', function() {
-      worker.postMessage( {
-        command: 'encode',
-        importRoot: '',
-        args: [
-          'opusenc.js',
-          f.name,
-          f.name + '.opus'
-        ],
-        input: new Uint8Array( fr.result )
-      } );
-    } );
-    fr.readAsArrayBuffer( f );
-  } );
-
-  worker.onmessage = function( e ) {
-    if ( e.data && e.data.reply === 'progress' ) {
-      vals = e.data.values;
-      if ( vals[1] ) {
-        $prog.val( vals[0] / vals[1] * 100  );
-      }
-    } else if ( e.data && e.data.reply === 'done' ) {
-      $prog.val( 100 );
-      $('<a>').text('encoded.opus').prop('href', window.URL.createObjectURL( e.data.values[0] )).insertAfter($input);
-      ;
-    }
-  };
-</script>
-</div>
+			worker.onmessage = function(e) {
+				if (e.data && e.data.reply === 'progress') {
+					vals = e.data.values;
+					if (vals[1]) {
+						$prog.val(vals[0] / vals[1] * 100);
+					}
+				} else if (e.data && e.data.reply === 'done') {
+					$prog.val(100);
+					for (fileName in e.data.values) {
+						$('<a>')
+							.text(fileName)
+							.prop('href', window.URL.createObjectURL(e.data.values[fileName].blob))
+							.insertAfter($input);
+					}
+				}
+			};
+		</script>
+	</div>
 </body>
+
 </html>
