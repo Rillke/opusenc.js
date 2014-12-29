@@ -20,7 +20,7 @@
  * IN THE SOFTWARE.
  */
 
-/*global self: false, Runtime: false, OpusEncoder: false, Module: false, FS: false, EmsArgs: false */
+/*global self: false, Runtime: false, OpusEncoder: false, Module: false, FS: false, EmsArgs: false, console: false */
 /*jslint vars: false,  white: false */
 /*jshint onevar: false, white: false, laxbreak: true, worker: true */
 ( function( global ) {
@@ -46,9 +46,22 @@
 			} );
 		},
 
-		encode: function( data ) {
-			var outFileName;
+		log: function( args ) {
+			global.postMessage( {
+				reply: 'log',
+				values: args
+			} );
+		},
 
+		err: function( args ) {
+			global.postMessage( {
+				reply: 'err',
+				values: args
+			} );
+		},
+
+		encode: function( data ) {
+			/*jshint forin:false */
 			data.importRoot = data.importRoot || '';
 			// Is the main library code loaded?
 			if ( !global.Module || !global.EmsArgs || !global.Runtime ) {
@@ -60,17 +73,24 @@
 
 			// Get a pointer for the callback function
 			var fPointer = Runtime.addFunction( function( encoded, total, seconds ) {
-				var fileContent, b;
+				var filename, fileContent, b;
 
 				if ( encoded === total && encoded === 100 && seconds === -1 ) {
-					fileContent = FS.readFile( outFileName, {
-						encoding: 'binary'
-					} );
-					b = new Blob(
-						[fileContent],
-						{type: 'audio/ogg'}
-					);
-					(data.done || OpusEncoder.done)( [ b ] );
+					// Read output files
+					for ( filename in data.outData ) {
+						if ( !data.outData.hasOwnProperty( filename ) ) {
+							return;
+						}
+						fileContent = FS.readFile( filename, {
+							encoding: 'binary'
+						} );
+						b = new Blob(
+							[fileContent],
+							{type: data.outData[filename].MIME}
+						);
+						data.outData[filename].blob = b;
+					}
+					(data.done || OpusEncoder.done)( data.outData );
 				} else {
 					(data.progress || OpusEncoder.progress)(
 						Array.prototype.slice.call( arguments )
@@ -78,38 +98,84 @@
 				}
 			} );
 
+			if (!global.console) global.console = {};
+			console.log = function() {
+				( data.log || OpusEncoder.log )(
+					Array.prototype.slice.call( arguments )
+				);
+			};
+
+			console.error = function() {
+				( data.err || OpusEncoder.err )(
+					Array.prototype.slice.call( arguments )
+				);
+			};
+
+			var infoBuff = '',
+				errBuff = '',
+				lastInfoFlush = Date.now(),
+				lastErrFlush = Date.now(),
+				infoTimeout, errTimeout, flushInfo, flushErr;
+
+			flushInfo = function() {
+				clearTimeout( infoTimeout );
+				lastInfoFlush = Date.now();
+				console.log( infoBuff );
+				infoBuff = '';
+			};
+			flushErr = function() {
+				clearTimeout( errTimeout );
+				lastErrFlush = Date.now();
+				console.log( errBuff );
+				errBuff = '';
+			};
+			Module.printErr = console.error;
+			FS.init( global.prompt || function() {
+				console.log( 'Input requested from within web worker. Returning empty string.' );
+				return '';
+			}, function( infoChar ) {
+				infoBuff += String.fromCharCode( infoChar );
+				clearTimeout( infoTimeout );
+				infoTimeout = setTimeout( flushInfo, 5 );
+				if ( lastInfoFlush + 700 < Date.now() ) {
+					flushInfo();
+				}
+			}, function( errChar ) {
+				errBuff += String.fromCharCode( errChar );
+				clearTimeout( errTimeout );
+				errTimeout = setTimeout( flushErr, 5 );
+				if ( lastErrFlush + 700 < Date.now() ) {
+					flushErr();
+				}
+			} );
+
 			// Set module arguments (command line arguments)
-			var args = data.args;
-			Module['arguments'] = args;
+			var args = data.args,
+				argsCloned = args.slice( 0 );
+
+			args.unshift( 'opusenc.js' );
+			Module['arguments'] = argsCloned;
 
 			// Create all neccessary files in MEMFS or whatever
 			// the mounted file system is
-			// Parse arguments for finding out file names
-			var filesCreated = 0;
-			var arg, skipNext;
-			for (var i = 0, l = args.length; i < l; ++i) {
-				arg = args[i].replace( /^\s+|\s+$/g, '' );
-				if ( arg.length && arg.indexOf( '-' ) === 0 ) {
-					skipNext = true;
-				} else if ( arg.length ) {
-					if ( !skipNext ) {
-						// Assume file name
-						if ( 1 === filesCreated ) {
-							// Input file
-							// Create file and copy content to destination
-							var stream = FS.open( arg, 'w+' );
-							FS.write( stream, data.input, 0, data.input.length );
-							FS.close( stream );
-						} else if ( 2 === filesCreated ) {
-							// Output file
-							// Just create an empty file
-							outFileName = arg;
-							FS.close( FS.open( arg, 'w+' ) );
-						}
-						++filesCreated;
-					}
-					skipNext = false;
+			var filename;
+			for ( filename in data.fileData ) {
+				if ( !data.fileData.hasOwnProperty( filename ) ) {
+					return;
 				}
+				var fileData = data.fileData[filename],
+					stream = FS.open( filename, 'w+' );
+
+				FS.write( stream, fileData, 0, fileData.length );
+				FS.close( stream );
+			}
+
+			// Create output files
+			for ( filename in data.outData ) {
+				if ( !data.outData.hasOwnProperty( filename ) ) {
+					return;
+				}
+				FS.close( FS.open( filename, 'w+' ) );
 			}
 
 			// Prepare C function to be called
