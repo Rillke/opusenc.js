@@ -239,6 +239,9 @@
 	try {
 		worker = new Worker( 'worker/EmsWorkerProxy.js' );
 	} catch ( ex ) {
+		if ( 'file:' === location.protocol ) {
+			$( '.oe-file-warn' ).show();
+		}
 		console.error( ex );
 	}
 

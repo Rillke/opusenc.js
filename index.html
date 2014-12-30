@@ -86,6 +86,9 @@
       border: medium none;
       padding: 0px;
     }
+    .oe-file-warn {
+      display: none;
+    }
 	</style>
 
 </head>
@@ -98,6 +101,12 @@
       <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
         <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em; margin-top: .3em;"></span>
         <strong>JavaScript error:</strong> Either JavaScript is still loading, it is disabled or something went terribly wrong. The demo will most likely not work. Please <a href="https://github.com/Rillke/opusenc.js/issues"><u>report this issue</u></a> so it can be fixed.</p>
+      </div>
+    </div>
+    <div class="ui-widget oe-file-warn">
+      <div class="ui-state-highlight ui-corner-all" style="padding: 0 .7em;">
+        <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em; margin-top: .3em;"></span>
+        <strong>Running from file:///</strong> When running from file:/// protocol, it might be impossible to load the worker code due to security restrictions. Chrome and Opera can be started with the <code>--allow-file-access-from-files</code> command line argument to bypass this kind of protection. However, if access from files is granted, the browser should not be used to browse other sites.</p>
       </div>
     </div>
 		<header class="inner">
@@ -116,6 +125,7 @@
 	<!-- MAIN CONTENT -->
 	<article id="main_content_wrap" class="outer">
 		<section id="main_content" class="inner">
+      <b>Opusenc.js</b> is a JavaScript port of the Opusenc tool, which is part of the <a href="//www.opus-codec.org/downloads/">opus-tools</a> collection, created with Emscripten. Or to say it in simple words, one could <a href="https://github.com/Rillke/opusenc.js/zipball/gh-pages">download all the static files</a> making up this page and running them offline in a modern browser. No server side processing is required. Together with the sound recording API of contemporary browsers, one can not only build powerful audio editing solutions but also <a href="https://github.com/Rillke/Recorderjs#recorderjs">sound recording tools</a>. But why Opus &hellip;
       <blockquote>
         <p>Opus is a totally open, royalty-free, highly versatile audio codec. Opus is
           unmatched for interactive speech and music transmission over the Internet,
@@ -125,6 +135,7 @@
         </p>
         <cite><a href="//opus-codec.org/">opus-codec.org</a></cite>
       </blockquote>
+      &hellip; and they are humble enough not to mention those fairly high compression rates while still preserving a superior audio quality.
       <section id="oe-demo">
         <h2>
   <a id="opusenc.js-demo" class="anchor" href="#opusenc.js-demo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demo</h2>
@@ -210,6 +221,12 @@
     <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
       <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em; margin-top: .3em;"></span>
       <strong>JavaScript error:</strong> Either JavaScript is still loading, it is disabled or something went terribly wrong. The demo will most likely not work. Please <a href="https://github.com/Rillke/opusenc.js/issues"><u>report this issue</u></a> so it can be fixed.</p>
+    </div>
+  </div>
+  <div class="ui-widget oe-file-warn">
+    <div class="ui-state-highlight ui-corner-all" style="padding: 0 .7em;">
+      <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em; margin-top: .3em;"></span>
+      <strong>Running from file:///</strong> When running from file:/// protocol, it might be impossible to load the worker code due to security restrictions. Chrome and Opera can be started with the <code>--allow-file-access-from-files</code> command line argument to bypass this kind of protection. However, if access from files is granted, the browser should not be used to browse other sites.</p>
     </div>
   </div>
 	<div id="footer_wrap" class="outer">
