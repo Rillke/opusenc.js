@@ -4,6 +4,9 @@ Authors
 ====================================================================
 An incomplete list of authors, their work and their copyright
 
+None of the authors listed, who are primarily listed for informational purposes,
+and as an expression of appreciation, endorsed development of opusenc.js.
+
 * Opusenc
     * Copyright (C)2002-2011 Jean-Marc Valin
     * Copyright (C)2007-2013 Xiph.Org Foundation
@@ -43,6 +46,12 @@ An incomplete list of authors, their work and their copyright
     * Copyright (C) 2001-2009  Josh Coalson
     * Copyright (C) 2011-2014  Xiph.Org Foundation
     * "lvqcl" <lvqcl@users.sourceforge.net>
+
+* Emscripten
+    * @kripken, @kripken and a lot more
+
+* LLVM
+    * LLVM Developer Group 
 
 Software licenses
 ====================================================================
