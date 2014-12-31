@@ -20,7 +20,7 @@
  * IN THE SOFTWARE.
  */
 
-/*global tags: false, console: false*/
+/*global tags: false, console: false, URL: false, saveAs: false*/
 /*jslint vars: false,  white: false */
 /*jshint onevar: false, white: false, laxbreak: true, worker: true */
 
@@ -56,6 +56,26 @@
 		.addClass( 'oe-console-errors' );
 	$info = $( '<pre>' )
 		.addClass( 'oe-console-info' );
+
+	function refresh() {
+		$fileInput
+			.removeAttr( 'disabled' )
+			.closest( 'form' )[0]
+			.reset();
+		$console.empty();
+		$downloads.find( 'a' ).each( function() {
+			try {
+				URL.revokeObjectURL( $( this ).attr( 'href' ) );
+			} catch ( ex ) {
+				console.error( ex );
+			}
+		} );
+		$downloads.empty().hide();
+		$workerProgress.val( 0 ).show();
+		$errors.empty();
+		worker = new Worker( 'worker/EmsWorkerProxy.js' );
+		worker.onmessage = onWorkerMessage;
+	}
 
 	function log( txt ) {
 		$info
@@ -93,6 +113,7 @@
 				},
 				'close': function() {
 					$( document.body ).removeAttr( 'style' );
+					refresh();
 				}
 			} );
 
@@ -268,6 +289,75 @@
 		}, 5 );
 	}
 
+	function onWorkerMessage( e ) {
+		/*jshint forin:false */
+		var vals, fileName, blob;
+
+		if ( !e.data ) {
+			return;
+		}
+		switch ( e.data.reply ) {
+			case 'progress':
+				vals = e.data.values;
+				if ( vals[ 1 ] ) {
+					$workerProgress.val( vals[ 0 ] / vals[ 1 ] * 100 );
+				}
+				break;
+			case 'done':
+				$workerProgress.val( 100 );
+
+				for ( fileName in e.data.values ) {
+					if ( !e.data.values.hasOwnProperty( fileName ) ) {
+						return;
+					}
+					blob = e.data.values[fileName].blob;
+
+					$( '<a>' )
+						.text( fileName )
+						.hide()
+						.prop( 'href', URL.createObjectURL( blob ) )
+						.attr( 'download', fileName )
+						.attr( 'style', 'background: url("images/icon_download.png") no-repeat scroll left center transparent; padding-left: 28px;' )
+						.appendTo( $downloads.show() )
+						.fadeIn()
+						.click( function( e ) {
+							saveAs( blob, fileName );
+							e.preventDefault();
+						} )
+						.click();
+					$downloads.append( ' ' );
+				}
+
+				$workerDlg
+					.dialog( {
+						'closeOnEscape': true
+					} )
+					.dialog( 'widget' )
+					.find( '.ui-dialog-titlebar' )
+					.fadeIn( 'slow' );
+
+				$workerProgress.fadeOut( 'slow' );
+				worker.terminate();
+				worker = null;
+				break;
+			case 'log':
+				var lines = $.trim( e.data.values[ 0 ] ).replace( /\r/g, '\n' ),
+					$lines;
+
+				lines = lines.split( '\n' );
+				$.each( lines, function( i, l ) {
+					lines[i] = l.replace( /\s*$/, '' );
+				} );
+				lines = lines.join( '\n' ).replace( /\n+/g, '\n' );
+				$lines = $info.clone().text( lines ).appendTo( $console );
+				$console.clearQueue().animate({ scrollTop: $console.scrollTop() + $lines.position().top }, 800);
+				break;
+			case 'err':
+				err( e.data.values[ 0 ] );
+				break;
+		}
+	}
+	
 	$cmd.tagit( {
 		placeholderText: 'Type `-´ for suggestions',
 		availableTags: availableTags,
@@ -282,6 +372,7 @@
 			command: 'prefetch',
 			importRoot: ''
 		} );
+		worker.onmessage = onWorkerMessage;
 	} catch ( ex ) {
 		var $oeFileWarn = $( '.oe-file-warn' ),
 			oeFileWarnText = $.trim( $oeFileWarn.eq( 0 ).text() );
@@ -301,77 +392,6 @@
 				primary: 'ui-icon-arrowreturnthick-1-e'
 			}
 		} );
-
-	if ( worker ) {
-		worker.onmessage = function( e ) {
-			/*jshint forin:false */
-			var vals, fileName, blob;
-
-			if ( !e.data ) {
-				return;
-			}
-			switch ( e.data.reply ) {
-				case 'progress':
-					vals = e.data.values;
-					if ( vals[ 1 ] ) {
-						$workerProgress.val( vals[ 0 ] / vals[ 1 ] * 100 );
-					}
-					break;
-				case 'done':
-					$workerProgress.val( 100 );
-
-					for ( fileName in e.data.values ) {
-						if ( !e.data.values.hasOwnProperty( fileName ) ) {
-							return;
-						}
-						blob = e.data.values[fileName].blob;
-
-						$( '<a>' )
-							.text( fileName )
-							.hide()
-							.prop( 'href', window.URL.createObjectURL( blob ) )
-							.attr( 'download', fileName )
-							.attr( 'style', 'background: url("images/icon_download.png") no-repeat scroll left center transparent; padding-left: 28px;' )
-							.appendTo( $downloads.show() )
-							.fadeIn()
-							.click( function( e ) {
-								saveAs( blob, fileName );
-								e.preventDefault();
-							} )
-							.click();
-						$downloads.append( ' ' );
-					}
-
-					$workerDlg
-						.dialog( {
-							'closeOnEscape': true
-						} )
-						.dialog( 'widget' )
-						.find( '.ui-dialog-titlebar' )
-						.fadeIn( 'slow' );
-
-					$workerProgress.fadeOut( 'slow' );
-					worker.terminate();
-					worker = null;
-					break;
-				case 'log':
-					var lines = $.trim( e.data.values[ 0 ] ).replace( /\r/g, '\n' ),
-						$lines;
-
-					lines = lines.split( '\n' );
-					$.each( lines, function( i, l ) {
-						lines[i] = l.replace( /\s*$/, '' );
-					} );
-					lines = lines.join( '\n' ).replace( /\n+/g, '\n' );
-					$lines = $info.clone().text( lines ).appendTo( $console );
-					$console.clearQueue().animate({ scrollTop: $console.scrollTop() + $lines.position().top }, 800);
-					break;
-				case 'err':
-					err( e.data.values[ 0 ] );
-					break;
-			}
-		};
-	}
 
 	function bindEvent( i, evt ) {
 		$fileInput.on( evt, function() {
