@@ -27,7 +27,7 @@
 ( function( global ) {
 	'use strict';
 
-	var $button, $fileInput, $workerDlg, $workerProgress, $console, $errors, $info, worker;
+	var $button, $fileInput, $workerDlg, $workerProgress, $downloads, $console, $errors, $info, worker;
 	var storedFiles = {},
 		outData = {},
 		$cmd = $( '#oe-cmd-options' ),
@@ -44,6 +44,12 @@
 	$workerDlg = $( '<div>' );
 	$workerProgress = $( '<progress style="display: inline-block; text-align: center; width: 100%;" value="0" max="100">Your browser does not support this tool. Upgrade to a modern browser, please.</progress>' )
 		.appendTo( $workerDlg );
+	$downloads = $( '<div>' )
+		.css( 'overflow', 'auto' )
+		.css( 'margin', '1em 0' )
+		.addClass( 'ui-state-highlight' )
+		.hide()
+		.appendTo( $workerDlg );
 	$console = $( '<div style="overflow: auto; height: 300px; border: 1px solid grey; padding: 2px; resize: both; white-space: pre-wrap;" class="oe-console"></div>' )
 		.appendTo( $workerDlg );
 	$errors = $( '<pre>' )
@@ -51,6 +57,18 @@
 	$info = $( '<pre>' )
 		.addClass( 'oe-console-info' );
 
+	function log( txt ) {
+		$info
+			.clone()
+			.text( txt )
+			.appendTo( $console );
+	}
+	function err( txt ) {
+		$errors
+			.clone()
+			.text( txt )
+			.appendTo( $console );
+	}
 	function encode() {
 		var f = $fileInput[ 0 ].files[ 0 ],
 			fr = new FileReader();
@@ -62,6 +80,7 @@
 
 			$workerDlg.dialog( {
 				'modal': true,
+				'title': 'Encoding completed - encoded files and log available',
 				'closeOnEscape': false,
 				'dialogClass': 'oe-progress-dialog',
 				'width': 660,
@@ -70,6 +89,10 @@
 						.dialog( 'widget' )
 						.find( '.ui-dialog-titlebar' )
 						.hide();
+					$( document.body ).css( 'overflow', 'hidden' );
+				},
+				'close': function() {
+					$( document.body ).removeAttr( 'style' );
 				}
 			} );
 
@@ -98,15 +121,20 @@
 				'MIME': 'audio/ogg'
 			};
 
-			$info
-				.clone()
-				.text( 'niceguy@rillke.com$ opusenc "' + args.join( '" "' ) + '"' )
-				.appendTo( $console );
+			log( 'niceguy@rillke.com$ opusenc "' + args.join( '" "' ) + '"' );
+			log( 'loading web worker scripts (1.2 MiB) ...' );
 
-			$info
-				.clone()
-				.text( 'loading web worker scripts (1.2 MiB) ...' )
-				.appendTo( $console );
+			if ( !worker ) {
+				err( 'No webworker available.' );
+				err( 'Aborting.' );
+				$workerDlg
+					.dialog( 'option', 'title', 'Error - Failed to load web worker' )
+					.dialog( 'widget' )
+					.find( '.ui-dialog-titlebar' )
+					.show();
+				return;
+			}
+			worker.onerror = err;
 
 			worker.postMessage( {
 				command: 'encode',
@@ -152,8 +180,12 @@
 			$fileParamInput = $( '<input id="files" name="file" style="width:98%" type="file" required="required" />' );
 
 		if ( tagInfo.infile ) {
-			$dlg.append( $fileParamInput.clone()
-				.attr( 'accept', tagInfo.infile.accept ) );
+			$fileParamInput
+				.attr( 'accept', tagInfo.infile.accept )
+				.change( function() {
+					$input.val( $input.val().replace( 'file', $fileParamInput[ 0 ].files[ 0 ].name ) );
+				} )
+				.insertBefore( $input );
 		}
 		$dlg.dialog( {
 			'title': 'Options for ' + ui.tagLabel,
@@ -175,7 +207,8 @@
 				}
 			},
 			'open': function() {
-				$input.focus()
+				( tagInfo.infile ? $fileParamInput : $input )
+					.focus()
 					.select();
 			},
 			'close': function() {
@@ -238,11 +271,21 @@
 
 	try {
 		worker = new Worker( 'worker/EmsWorkerProxy.js' );
+		worker.postMessage( {
+			command: 'prefetch',
+			importRoot: ''
+		} );
 	} catch ( ex ) {
+		var $oeFileWarn = $( '.oe-file-warn' ),
+			oeFileWarnText = $.trim( $oeFileWarn.eq( 0 ).text() );
+
 		if ( 'file:' === location.protocol ) {
-			$( '.oe-file-warn' ).show();
+			$oeFileWarn.show();
+			console.error( oeFileWarnText );
+			err( oeFileWarnText );
 		}
 		console.error( ex );
+		err( ex );
 	}
 
 	$button
@@ -252,56 +295,70 @@
 			}
 		} );
 
-	worker.onmessage = function( e ) {
-		/*jshint forin:false */
-		var vals, fileName;
+	if ( worker ) {
+		worker.onmessage = function( e ) {
+			/*jshint forin:false */
+			var vals, fileName;
 
-		if ( !e.data ) {
-			return;
-		}
-		switch ( e.data.reply ) {
-			case 'progress':
-				vals = e.data.values;
-				if ( vals[ 1 ] ) {
-					$workerProgress.val( vals[ 0 ] / vals[ 1 ] * 100 );
-				}
-				break;
-			case 'done':
-				$workerProgress.val( 100 );
-				for ( fileName in e.data.values ) {
-					if ( !e.data.values.hasOwnProperty( fileName ) ) {
-						return;
+			if ( !e.data ) {
+				return;
+			}
+			switch ( e.data.reply ) {
+				case 'progress':
+					vals = e.data.values;
+					if ( vals[ 1 ] ) {
+						$workerProgress.val( vals[ 0 ] / vals[ 1 ] * 100 );
 					}
-					$( '<a>' )
-						.text( fileName )
-						.prop( 'href', window.URL.createObjectURL( e.data.values[fileName].blob ) )
-						.attr( 'download', fileName )
-						.attr( 'style', 'background: url("images/icon_download.png") no-repeat scroll left center transparent; padding-left: 28px;' )
-						.insertAfter( $workerProgress )
-						.click();
-					$workerProgress.append( ' ' );
-				}
-				break;
-			case 'log':
-				var lines = $.trim( e.data.values[ 0 ] ).replace( /\r/g, '\n' ),
-					$lines;
+					break;
+				case 'done':
+					$workerProgress.val( 100 );
 
-				lines = lines.split( '\n' );
-				$.each( lines, function( i, l ) {
-					lines[i] = l.replace( /\s*$/, '' );
-				} );
-				lines = lines.join( '\n' ).replace( /\n+/g, '\n' );
-				$lines = $info.clone().text( lines ).appendTo( $console );
-				$console.clearQueue().animate({ scrollTop: $console.scrollTop() + $lines.position().top }, 800);
-				break;
-			case 'err':
-				if ( !$errors.hasParent ) {
-					$errors.hasParent = true;
-					$errors.appendTo( $console );
-				}
-				break;
-		}
-	};
+					for ( fileName in e.data.values ) {
+						if ( !e.data.values.hasOwnProperty( fileName ) ) {
+							return;
+						}
+						$( '<a>' )
+							.text( fileName )
+							.hide()
+							.prop( 'href', window.URL.createObjectURL( e.data.values[fileName].blob ) )
+							.attr( 'download', fileName )
+							.attr( 'style', 'background: url("images/icon_download.png") no-repeat scroll left center transparent; padding-left: 28px;' )
+							.appendTo( $downloads.show() )
+							.fadeIn()
+							.click();
+						$downloads.append( ' ' );
+					}
+
+					$workerDlg
+						.dialog( {
+							'closeOnEscape': true
+						} )
+						.dialog( 'widget' )
+						.find( '.ui-dialog-titlebar' )
+						.fadeIn( 'slow' );
+
+					$workerProgress.fadeOut( 'slow' );
+					worker.terminate();
+					worker = null;
+					break;
+				case 'log':
+					var lines = $.trim( e.data.values[ 0 ] ).replace( /\r/g, '\n' ),
+						$lines;
+
+					lines = lines.split( '\n' );
+					$.each( lines, function( i, l ) {
+						lines[i] = l.replace( /\s*$/, '' );
+					} );
+					lines = lines.join( '\n' ).replace( /\n+/g, '\n' );
+					$lines = $info.clone().text( lines ).appendTo( $console );
+					$console.clearQueue().animate({ scrollTop: $console.scrollTop() + $lines.position().top }, 800);
+					break;
+				case 'err':
+					err( e.data.values[ 0 ] );
+					break;
+			}
+		};
+	}
 
 	function bindEvent( i, evt ) {
 		$fileInput.on( evt, function() {
