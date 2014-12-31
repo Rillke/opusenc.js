@@ -184,7 +184,7 @@
 					'name': 'foobar'
 				} )
 				.appendTo( $dlg ),
-			$fileParamInput = $( '<input id="files" name="file" style="width:98%" type="file" required="required" />' );
+			$fileParamInput = $( '<input id="files" name="file" style="width:98%" type="file" required="required" autocomplete="off" />' );
 
 		if ( tagInfo.infile ) {
 			$fileParamInput
