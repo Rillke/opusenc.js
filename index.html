@@ -12,10 +12,11 @@
 
 	<link rel="stylesheet" type="text/css" media="screen" href="css/gh.css">
 	<link href="css/jquery-ui.css" rel="stylesheet">
-	<script src="js/modernizr.custom.js"></script>
+	<script src="js/modernizr.custom.js" async="async"></script>
 
 	<link href="css/jquery.tagit.css" rel="stylesheet" type="text/css">
 	<script src="js/tag-it.js"></script>
+  <script src="js/FileSaver.js" async="async"></script>
 
 	<title>Opusenc.js</title>
 
@@ -126,7 +127,9 @@
 	<!-- MAIN CONTENT -->
 	<article id="main_content_wrap" class="outer">
 		<section id="main_content" class="inner">
-      <b>Opusenc.js</b> is a JavaScript port of the Opusenc tool, which is part of the <a href="//www.opus-codec.org/downloads/">opus-tools</a> collection, created with Emscripten. Or to say it in simple words, one could <a href="https://github.com/Rillke/opusenc.js/zipball/gh-pages">download all the static files</a> making up this page and running them offline in a modern browser. No server side processing is required. Together with the sound recording API of contemporary browsers, one can not only build powerful audio editing solutions but also <a href="https://github.com/Rillke/Recorderjs#recorderjs">sound recording tools</a>. But why Opus &hellip;
+      <strong>Opusenc.js</strong> is a JavaScript port of the <a href="https://mf4.xiph.org/jenkins/view/opus/job/opus-tools/ws/man/opusenc.html"><em>opusenc</em> tool</a>, which in turn is part of the <a href="//www.opus-codec.org/downloads/"><em>opus-tools</em></a> collection, created with <em>Emscripten</em>. To say it in simple words, one could <a href="https://github.com/Rillke/opusenc.js/zipball/gh-pages"><strong>download</strong> all the static files</a> making up this page and running them offline in a modern browser. No server side processing is required. Together with the sound recording API of contemporary browsers, one can not only build <em>powerful audio editing solutions</em> but also <a href="https://github.com/Rillke/Recorderjs#recorderjs"><em>sound recording tools</em></a>.
+      <br />
+      What is Opus and why is Opus great:
       <blockquote>
         <p>Opus is a totally open, royalty-free, highly versatile audio codec. Opus is
           unmatched for interactive speech and music transmission over the Internet,
@@ -136,7 +139,7 @@
         </p>
         <cite><a href="//opus-codec.org/">opus-codec.org</a></cite>
       </blockquote>
-      &hellip; and they are humble enough not to mention those fairly high compression rates while still preserving a superior audio quality.
+      They are humble enough not to mention those fairly <strong>high compression rates</strong> while still preserving a <strong>superior audio quality</strong>.
       <section id="oe-demo">
         <h2>
   <a id="opusenc.js-demo" class="anchor" href="#opusenc.js-demo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demo</h2>
@@ -258,7 +261,7 @@
 
   <!-- Demo JavaScript -->
   <script src="js/sample.tags.js"></script>
-	<script src="js/sample.js"></script>
+	<script src="js/sample.js" async="async"></script>
 
   <!-- Google Analytics -->
 	<script type="text/javascript">

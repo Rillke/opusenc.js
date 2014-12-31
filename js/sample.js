@@ -164,7 +164,14 @@
 				.fadeTo( 0, 0 )
 				.appendTo( $dlg ),
 			$pre = $( '<pre>' )
-				.css( 'width', '90%' )
+				.css( {
+					'width': '100%',
+					'height': '300px',
+					'padding': '0px',
+					'margin': '1em 0',
+					'overflow': 'auto',
+					'resize': 'both'
+				} )
 				.text( tagInfo.desc )
 				.appendTo( $dlg ),
 			$input = $( '<input>' )
@@ -298,7 +305,7 @@
 	if ( worker ) {
 		worker.onmessage = function( e ) {
 			/*jshint forin:false */
-			var vals, fileName;
+			var vals, fileName, blob;
 
 			if ( !e.data ) {
 				return;
@@ -317,14 +324,20 @@
 						if ( !e.data.values.hasOwnProperty( fileName ) ) {
 							return;
 						}
+						blob = e.data.values[fileName].blob;
+
 						$( '<a>' )
 							.text( fileName )
 							.hide()
-							.prop( 'href', window.URL.createObjectURL( e.data.values[fileName].blob ) )
+							.prop( 'href', window.URL.createObjectURL( blob ) )
 							.attr( 'download', fileName )
 							.attr( 'style', 'background: url("images/icon_download.png") no-repeat scroll left center transparent; padding-left: 28px;' )
 							.appendTo( $downloads.show() )
 							.fadeIn()
+							.click( function( e ) {
+								saveAs( blob, fileName );
+								e.preventDefault();
+							} )
 							.click();
 						$downloads.append( ' ' );
 					}

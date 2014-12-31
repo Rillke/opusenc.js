@@ -154,22 +154,62 @@
 			'regexp': /.*/
 		},
 		'picture': {
-			'desc': 'Album art for this track\n' +
-				'More than one --picture option can be specified.\n' +
-				'Either a FILENAME for the picture file or a more\n' +
-				'complete SPECIFICATION form can be used. The\n' +
-				'SPECIFICATION is a string whose parts are\n' +
-				'separated by | (pipe) characters. Some parts may\n' +
-				'be left empty to invoke default values. A\n' +
-				'FILENAME is just shorthand for \"||||FILENAME\".\n' +
-				'The format of SPECIFICATION is\n' +
-				'\n' +
-				'[TYPE]|[MIME-TYPE]|[DESCRIPTION]|[WIDTHxHEIGHT\n' +
-				'xDEPTH[/COLORS]]|FILENAME\n' +
-				'\n' +
-				'TYPE is an optional number from one of:\n' +
-				'0: Other\n' +
-				'...',
+			'desc': "More than one --picture option can be specified.\n" +
+					"Either a FILENAME for the picture file or a more\n" +
+					"complete SPECIFICATION form can be used. The\n" +
+					"SPECIFICATION is a string whose parts are\n" +
+					"separated by | (pipe) characters. Some parts may\n" +
+					"be left empty to invoke default values. A\n" +
+					"FILENAME is just shorthand for \"||||FILENAME\".\n" +
+					"The format of SPECIFICATION is\n" +
+					"[TYPE]|[MIME-TYPE]|[DESCRIPTION]|[WIDTHxHEIGHT\n" +
+					"xDEPTH[/COLORS]]|FILENAME\n" +
+					"TYPE is an optional number from one of:\n" +
+					"0: Other\n" +
+					"1: 32x32 pixel 'file icon' (PNG only)\n" +
+					"2: Other file icon\n" +
+					"3: Cover (front)\n" +
+					"4: Cover (back)\n" +
+					"5: Leaflet page\n" +
+					"6: Media (e.g., label side of a CD)\n" +
+					"7: Lead artist/lead performer/soloist\n" +
+					"8: Artist/performer\n" +
+					"9: Conductor\n" +
+					"10: Band/Orchestra\n" +
+					"11: Composer\n" +
+					"12: Lyricist/text writer\n" +
+					"13: Recording location\n" +
+					"14: During recording\n" +
+					"15: During performance\n" +
+					"16: Movie/video screen capture\n" +
+					"17: A bright colored fish\n" +
+					"18: Illustration\n" +
+					"19: Band/artist logotype\n" +
+					"20: Publisher/studio logotype\n" +
+					"The default is 3 (front cover). There may only be\n" +
+					"one picture each of type 1 and 2 in a file.\n" +
+					"MIME-TYPE is optional. If left blank, it will be\n" +
+					"detected from the file. For best compatibility\n" +
+					"with players, use pictures with a MIME-TYPE of\n" +
+					"image/jpeg or image/png. The MIME-TYPE can also\n" +
+					"be --> to mean that FILENAME is actually a URL to\n" +
+					"an image, though this use is discouraged. The\n" +
+					"file at the URL will not be fetched. The URL\n" +
+					"itself is stored in the metadata.\n" +
+					"DESCRIPTION is optional. The default is an empty\n" +
+					"string.\n" +
+					"The next part specifies the resolution and color\n" +
+					"information. If the MIME-TYPE is image/jpeg,\n" +
+					"image/png, or image/gif, you can usually leave\n" +
+					"this empty and they can be detected from the\n" +
+					"file. Otherwise, you must specify the width in\n" +
+					"pixels, height in pixels, and color depth in\n" +
+					"bits-per-pixel. If the image has indexed colors\n" +
+					"you should also specify the number of colors\n" +
+					"used. If possible, these are checked against the\n" +
+					"file for accuracy.\n" +
+					"FILENAME is the path to the picture file to be\n" +
+					"imported, or the URL if the MIME-TYPE is -->.\n",
 			'fmt': 'file',
 			'infile': {
 				'accept': 'image/*,.png,.jpg'
