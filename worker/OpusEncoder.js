@@ -102,7 +102,7 @@
 					if ( !runDeps ) {
 						OpusEncoder.runQueued();
 					}
-				}
+				};
 
 				FS.init( global.prompt || function() {
 					console.log( 'Input requested from within web worker. Returning empty string.' );
