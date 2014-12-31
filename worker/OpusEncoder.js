@@ -25,6 +25,8 @@
 /*jshint onevar: false, white: false, laxbreak: true, worker: true */
 ( function( global ) {
 	'use strict';
+	var runDependencies = 0,
+		queue = [];
 
 	/**
 	 * Manages encoding and progress notifications
@@ -32,6 +34,98 @@
 	 *  @singleton
 	 */
 	global.OpusEncoder = {
+		encode: function( data ) {
+			if ( !runDependencies ) {
+				OpusEncoder._encode( data );
+			} else {
+				queue.push( data );
+			}
+		},
+
+		runQueued: function() {
+			while ( queue.length ) {
+				OpusEncoder._encode( queue.shift() );
+			}
+		},
+
+		prefetch: function( data ) {
+			var infoBuff = '',
+				errBuff = '',
+				lastInfoFlush = Date.now(),
+				lastErrFlush = Date.now(),
+				infoTimeout, errTimeout, flushInfo, flushErr;
+
+			data.importRoot = data.importRoot || '';
+
+			if ( !global.Module || !global.EmsArgs || !global.Runtime ) {
+				importScripts(
+					data.importRoot + 'EmsArgs.js',
+					data.importRoot + 'opusenc.js'
+				);
+
+				// It appears that we've to initialize the file system
+				// right after loading the emscripten compiled encoder script
+				// Otherwise, the file system is initialized by something else
+				// and subsequent calls throw errors
+				if (!global.console) global.console = {};
+				console.log = function() {
+					( data.log || OpusEncoder.log )(
+						Array.prototype.slice.call( arguments )
+					);
+				};
+
+				console.error = function() {
+					( data.err || OpusEncoder.err )(
+						Array.prototype.slice.call( arguments )
+					);
+				};
+
+				OpusEncoder.flushInfo = flushInfo = function() {
+					clearTimeout( infoTimeout );
+					lastInfoFlush = Date.now();
+					if ( infoBuff.replace( /\s*/g, '' ) ) {
+						console.log( infoBuff );
+						infoBuff = '';
+					}
+				};
+				OpusEncoder.flushErr = flushErr = function() {
+					clearTimeout( errTimeout );
+					lastErrFlush = Date.now();
+					if ( errBuff.replace( /\s*/g, '' ) ) {
+						console.log( errBuff );
+						errBuff = '';
+					}
+				};
+				Module.printErr = console.error;
+				Module.monitorRunDependencies = function( runDeps ) {
+					runDependencies = runDeps;
+					if ( !runDeps ) {
+						OpusEncoder.runQueued();
+					}
+				}
+
+				FS.init( global.prompt || function() {
+					console.log( 'Input requested from within web worker. Returning empty string.' );
+					return '';
+				}, function( infoChar ) {
+					infoBuff += String.fromCharCode( infoChar );
+					clearTimeout( infoTimeout );
+					infoTimeout = setTimeout( flushInfo, 5 );
+					if ( lastInfoFlush + 700 < Date.now() ) {
+						flushInfo();
+					}
+				}, function( errChar ) {
+					errBuff += String.fromCharCode( errChar );
+					clearTimeout( errTimeout );
+					errTimeout = setTimeout( flushErr, 5 );
+					if ( lastErrFlush + 700 < Date.now() ) {
+						flushErr();
+					}
+				} );
+
+			}
+		},
+
 		done: function( args ) {
 			global.postMessage( {
 				reply: 'done',
@@ -60,20 +154,19 @@
 			} );
 		},
 
-		encode: function( data ) {
+		_encode: function( data ) {
 			/*jshint forin:false */
-			data.importRoot = data.importRoot || '';
-			// Is the main library code loaded?
-			if ( !global.Module || !global.EmsArgs || !global.Runtime ) {
-				importScripts(
-					data.importRoot + 'EmsArgs.js',
-					data.importRoot + 'opusenc.js'
-				);
-			}
+			var fPointer;
+
+			OpusEncoder.prefetch( data );
 
 			// Get a pointer for the callback function
-			var fPointer = Runtime.addFunction( function( encoded, total, seconds ) {
+			fPointer = Runtime.addFunction( function( encoded, total, seconds ) {
 				var filename, fileContent, b;
+
+				// We *know* that writing to to stdin and/or stderr completed
+				OpusEncoder.flushInfo();
+				OpusEncoder.flushErr();
 
 				if ( encoded === total && encoded === 100 && seconds === -1 ) {
 					// Read output files
@@ -95,57 +188,6 @@
 					(data.progress || OpusEncoder.progress)(
 						Array.prototype.slice.call( arguments )
 					);
-				}
-			} );
-
-			if (!global.console) global.console = {};
-			console.log = function() {
-				( data.log || OpusEncoder.log )(
-					Array.prototype.slice.call( arguments )
-				);
-			};
-
-			console.error = function() {
-				( data.err || OpusEncoder.err )(
-					Array.prototype.slice.call( arguments )
-				);
-			};
-
-			var infoBuff = '',
-				errBuff = '',
-				lastInfoFlush = Date.now(),
-				lastErrFlush = Date.now(),
-				infoTimeout, errTimeout, flushInfo, flushErr;
-
-			flushInfo = function() {
-				clearTimeout( infoTimeout );
-				lastInfoFlush = Date.now();
-				console.log( infoBuff );
-				infoBuff = '';
-			};
-			flushErr = function() {
-				clearTimeout( errTimeout );
-				lastErrFlush = Date.now();
-				console.log( errBuff );
-				errBuff = '';
-			};
-			Module.printErr = console.error;
-			FS.init( global.prompt || function() {
-				console.log( 'Input requested from within web worker. Returning empty string.' );
-				return '';
-			}, function( infoChar ) {
-				infoBuff += String.fromCharCode( infoChar );
-				clearTimeout( infoTimeout );
-				infoTimeout = setTimeout( flushInfo, 5 );
-				if ( lastInfoFlush + 700 < Date.now() ) {
-					flushInfo();
-				}
-			}, function( errChar ) {
-				errBuff += String.fromCharCode( errChar );
-				clearTimeout( errTimeout );
-				errTimeout = setTimeout( flushErr, 5 );
-				if ( lastErrFlush + 700 < Date.now() ) {
-					flushErr();
 				}
 			} );
 
@@ -183,7 +225,11 @@
 
 			// Copy command line args to Emscripten Heap and get a pointer to them
 			EmsArgs.cArgsPointer( args, function( pointerHeap ) {
-				encode_buffer( args.length, pointerHeap.byteOffset, fPointer );
+				try {
+					encode_buffer( args.length, pointerHeap.byteOffset, fPointer );
+				} catch ( ex ) {
+					console.error( ex );
+				}
 			} );
 		}
 	};
