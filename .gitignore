@@ -1,4 +1,5 @@
-flac
-opus
-opus-tools
-libogg
+flac/
+opus/
+opus-tools/
+libogg/
+node_modules/
