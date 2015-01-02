@@ -22,11 +22,134 @@
 
 /*global self: false, Runtime: false, OpusEncoder: false, Module: false, FS: false, EmsArgs: false, console: false */
 /*jslint vars: false,  white: false */
-/*jshint onevar: false, white: false, laxbreak: true, worker: true */
+/*jshint onevar: false, white: false, laxbreak: true, worker: true, strict: false */
+
+( function( global ) {
+	/* jshint evil: true */
+	global.callEval = function ( s ) {
+		var Module = global.Module,
+			ret = eval( s );
+
+		global.FS = FS;
+		global.Module = Module;
+		global.Runtime = Runtime;
+		return ret;
+	};
+}( self ) );
+
 ( function( global ) {
 	'use strict';
 	var runDependencies = 0,
+		MainScriptLoader,
+		downloadCompleted,
+		downloadError,
 		queue = [];
+
+	/**
+	 * Downloads main script
+	 *  @class MainScriptLoader
+	 *  @singleton
+	 *  @private
+	 */
+	MainScriptLoader = {
+		name: 'opusenc.js',
+		text: null,
+		status: 'idle',
+		xhrload: function( data, complete, err ) {
+			data.importRoot = data.importRoot || '';
+
+			var xhrfailed = function( errMsg ) {
+				if ( MainScriptLoader.status !== 'loading' ) {
+					return;
+				}
+				MainScriptLoader.status = 'xhrfailed';
+				MainScriptLoader.onDownloadError( errMsg );
+				if ( err ) err();
+			};
+
+			var xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = function() {
+				if ( xhr.readyState === xhr.DONE ) {
+					if ( xhr.status === 200 || xhr.status === 0 && location.protocol === 'file:' ) {
+						MainScriptLoader.text = xhr.responseText;
+						MainScriptLoader.status = 'loaded';
+						MainScriptLoader.onDownloadComplete();
+						if ( complete ) complete();
+						if ( downloadCompleted ) downloadCompleted();
+					} else {
+						xhrfailed( 'Server status ' +  xhr.status );
+					}
+				}
+			};
+			xhr.onprogress = function( e ) {
+				if ( e.lengthComputable ) {
+					MainScriptLoader.onDownloadProgress( e.loaded, e.total );
+				}
+			};
+			xhr.onerror = function() {
+				xhrfailed( 'There was an error with the request.' );
+			};
+			xhr.ontimeout = function() {
+				xhrfailed( 'Request timed out.' );
+			};
+
+			try {
+				MainScriptLoader.status = 'loading';
+				xhr.open( 'GET', data.importRoot + MainScriptLoader.name );
+				xhr.send( null );
+			} catch ( ex ) {
+				xhrfailed( ex.message || ex );
+			}
+		},
+		onDownloadProgress: function( /* loaded, total */ ) {},
+		onDownloadComplete: function() {},
+		onDownloadError: function( /* description */ ) {},
+		downloadAndExecute: function( data, beforeExecution, afterExecution ) {
+			switch ( MainScriptLoader.status ) {
+				case 'idle':
+					MainScriptLoader.xhrload( data, function() {
+						beforeExecution();
+						MainScriptLoader.execute();
+						afterExecution();
+					}, function() {
+						beforeExecution();
+						importScripts( ( data.importRoot || '' ) + MainScriptLoader.name );
+						afterExecution();
+					} );
+					break;
+				case 'xhrfailed':
+					beforeExecution();
+					importScripts( ( data.importRoot || '' ) + MainScriptLoader.name );
+					afterExecution();
+					break;
+				case 'loaded':
+					beforeExecution();
+					MainScriptLoader.execute();
+					afterExecution();
+					break;
+				case 'loading':
+					downloadCompleted = function() {
+						downloadCompleted = null;
+						downloadError = null;
+						beforeExecution();
+						MainScriptLoader.execute();
+						afterExecution();
+					};
+					downloadError = function() {
+						beforeExecution();
+						importScripts( ( data.importRoot || '' ) + MainScriptLoader.name );
+						afterExecution();
+					};
+					break;
+			}
+		},
+		execute: function() {
+			if ( !MainScriptLoader.text ) {
+				throw new Error( 'Main script text must be loaded before!' );
+			}
+			global.callEval( MainScriptLoader.text );
+		}
+	};
 
 	/**
 	 * Manages encoding and progress notifications
@@ -35,11 +158,34 @@
 	 */
 	global.OpusEncoder = {
 		encode: function( data ) {
-			if ( !runDependencies ) {
-				OpusEncoder._encode( data );
-			} else {
-				queue.push( data );
+			OpusEncoder.setUpLogging( data );
+			OpusEncoder.monitorWWDownload();
+			MainScriptLoader.downloadAndExecute( data, function() {
+				// Before execute main script ...
+				if ( !global.EmsArgs ){
+					importScripts( data.importRoot + 'EmsArgs.js' );
+				}
+				OpusEncoder.setUpModule( data );
+			}, function() {
+				// After executed the main script ...
+				OpusEncoder.setUpFilesystem();
+				setTimeout( function() {
+					if ( !runDependencies ) {
+						OpusEncoder._encode( data );
+					} else {
+						queue.push( data );
+					}
+				}, 5 );
+			} );
+		},
+
+		prefetch: function( data ) {
+			if ( global.Module && global.EmsArgs && global.Runtime ) {
+				return;
 			}
+			OpusEncoder.setUpLogging( data );
+			MainScriptLoader.xhrload( data );
+			importScripts( data.importRoot + 'EmsArgs.js' );
 		},
 
 		runQueued: function() {
@@ -48,82 +194,122 @@
 			}
 		},
 
-		prefetch: function( data ) {
+		setUpLogging: function( data ) {
+			if ( !global.console ) global.console = {};
+			console.log = function() {
+				( data.log || OpusEncoder.log )(
+					Array.prototype.slice.call( arguments )
+				);
+			};
+
+			console.error = function() {
+				( data.err || OpusEncoder.err )(
+					Array.prototype.slice.call( arguments )
+				);
+			};
+		},
+
+		monitorWWDownload: function() {
+			var lastLog = 0;
+
+			MainScriptLoader.onDownloadComplete = function() {
+				console.log( 'Worker downloaded successfully.' );
+			};
+
+			MainScriptLoader.onDownloadProgress = function( loaded, total ) {
+				var now = Date.now(),
+					diff = now - lastLog;
+
+				if ( diff > 450 ) {
+					lastLog = now;
+					console.log( 'Downloading Opus Encoder code ... ' + Math.round( 100 * loaded / total, 2) + '%' );
+				}
+			};
+			MainScriptLoader.onDownloadError = function( err ) {
+				console.log( 'Failed to download worker utilizing XHR.\n' + err + '\nTrying importScripts() ...' );
+			};
+		},
+
+		setUpModule: function( data ) {
+			/*jshint forin:false */
+			var totalFileLength = 0,
+				filename, memRequired;
+
+			for ( filename in data.fileData ) {
+				if ( !data.fileData.hasOwnProperty( filename ) ) {
+					return;
+				}
+				var fileData = data.fileData[filename];
+
+				totalFileLength += fileData.length;
+			}
+
+			memRequired = totalFileLength * 2 + 0x1000000;
+			// Currently "The asm.js rules specify that the heap size must be
+			// a multiple of 16MB or a power of two. Minimum heap size is 64KB"
+			memRequired = memRequired - ( memRequired % 0x1000000 ) + 0x1000000;
+
+			global.Module = {
+				TOTAL_MEMORY: memRequired,
+				printErr: console.error.bind( console ),
+				monitorRunDependencies: function( runDeps ) {
+					runDependencies = runDeps;
+					if ( !runDeps ) {
+						OpusEncoder.runQueued();
+					}
+				},
+				locateFile: function( memFile ) {
+					return memFile.replace( /^opusenc\.(html|js)\.mem$/, 'opusenc.data.js' );
+				}
+			};
+		},
+
+		setUpFilesystem: function() {
 			var infoBuff = '',
 				errBuff = '',
 				lastInfoFlush = Date.now(),
 				lastErrFlush = Date.now(),
 				infoTimeout, errTimeout, flushInfo, flushErr;
 
-			data.importRoot = data.importRoot || '';
+			// It appears that we've to initialize the file system
+			// right after loading the emscripten compiled encoder script
+			// Otherwise, the file system is initialized by something else
+			// and subsequent calls throw errors
+			OpusEncoder.flushInfo = flushInfo = function() {
+				clearTimeout( infoTimeout );
+				lastInfoFlush = Date.now();
+				if ( infoBuff.replace( /\s*/g, '' ) ) {
+					console.log( infoBuff );
+					infoBuff = '';
+				}
+			};
+			OpusEncoder.flushErr = flushErr = function() {
+				clearTimeout( errTimeout );
+				lastErrFlush = Date.now();
+				if ( errBuff.replace( /\s*/g, '' ) ) {
+					console.log( errBuff );
+					errBuff = '';
+				}
+			};
 
-			if ( !global.Module || !global.EmsArgs || !global.Runtime ) {
-				importScripts(
-					data.importRoot + 'EmsArgs.js',
-					data.importRoot + 'opusenc.js'
-				);
-
-				// It appears that we've to initialize the file system
-				// right after loading the emscripten compiled encoder script
-				// Otherwise, the file system is initialized by something else
-				// and subsequent calls throw errors
-				if (!global.console) global.console = {};
-				console.log = function() {
-					( data.log || OpusEncoder.log )(
-						Array.prototype.slice.call( arguments )
-					);
-				};
-
-				console.error = function() {
-					( data.err || OpusEncoder.err )(
-						Array.prototype.slice.call( arguments )
-					);
-				};
-
-				OpusEncoder.flushInfo = flushInfo = function() {
-					clearTimeout( infoTimeout );
-					lastInfoFlush = Date.now();
-					if ( infoBuff.replace( /\s*/g, '' ) ) {
-						console.log( infoBuff );
-						infoBuff = '';
-					}
-				};
-				OpusEncoder.flushErr = flushErr = function() {
-					clearTimeout( errTimeout );
-					lastErrFlush = Date.now();
-					if ( errBuff.replace( /\s*/g, '' ) ) {
-						console.log( errBuff );
-						errBuff = '';
-					}
-				};
-				Module.printErr = console.error;
-				Module.monitorRunDependencies = function( runDeps ) {
-					runDependencies = runDeps;
-					if ( !runDeps ) {
-						OpusEncoder.runQueued();
-					}
-				};
-
-				FS.init( global.prompt || function() {
-					console.log( 'Input requested from within web worker. Returning empty string.' );
-					return '';
-				}, function( infoChar ) {
-					infoBuff += String.fromCharCode( infoChar );
-					clearTimeout( infoTimeout );
-					infoTimeout = setTimeout( flushInfo, 5 );
-					if ( lastInfoFlush + 700 < Date.now() ) {
-						flushInfo();
-					}
-				}, function( errChar ) {
-					errBuff += String.fromCharCode( errChar );
-					clearTimeout( errTimeout );
-					errTimeout = setTimeout( flushErr, 5 );
-					if ( lastErrFlush + 700 < Date.now() ) {
-						flushErr();
-					}
-				} );
-
-			}
+			FS.init( global.prompt || function() {
+				console.log( 'Input requested from within web worker. Returning empty string.' );
+				return '';
+			}, function( infoChar ) {
+				infoBuff += String.fromCharCode( infoChar );
+				clearTimeout( infoTimeout );
+				infoTimeout = setTimeout( flushInfo, 5 );
+				if ( lastInfoFlush + 700 < Date.now() ) {
+					flushInfo();
+				}
+			}, function( errChar ) {
+				errBuff += String.fromCharCode( errChar );
+				clearTimeout( errTimeout );
+				errTimeout = setTimeout( flushErr, 5 );
+				if ( lastErrFlush + 700 < Date.now() ) {
+					flushErr();
+				}
+			} );
 		},
 
 		done: function( args ) {
@@ -157,8 +343,6 @@
 		_encode: function( data ) {
 			/*jshint forin:false */
 			var fPointer;
-
-			OpusEncoder.prefetch( data );
 
 			// Get a pointer for the callback function
 			fPointer = Runtime.addFunction( function( encoded, total, seconds ) {
@@ -201,6 +385,7 @@
 			// Create all neccessary files in MEMFS or whatever
 			// the mounted file system is
 			var filename;
+
 			for ( filename in data.fileData ) {
 				if ( !data.fileData.hasOwnProperty( filename ) ) {
 					return;
@@ -228,7 +413,7 @@
 				try {
 					encode_buffer( args.length, pointerHeap.byteOffset, fPointer );
 				} catch ( ex ) {
-					console.error( ex );
+					console.error( ex.message || ex );
 				}
 			} );
 		}

@@ -91,12 +91,27 @@
     .oe-file-warn {
       display: none;
     }
+    body.oe-acceptdrop #main_content_wrap {
+      background-color: #B7D9E0;
+    }
+    .oe-dnd-info {
+      position: fixed;
+      padding: 4em;
+      top: 50%;
+      left: 50%;
+      margin-left: -6em;
+      margin-top: -4.5em;
+      font-size: 2em;
+      display: none;
+    }
+    .oe-acceptdrop .oe-dnd-info {
+      display: block;
+    }
 	</style>
 
 </head>
 
 <body>
-
 	<!-- HEADER -->
 	<div id="header_wrap" class="outer">
     <div class="ui-widget oe-js-warn">
@@ -162,8 +177,8 @@
         <section id="oe-command-line-options">
           <h3><a id="opusenc.js-cmd-switches" class="anchor" href="#opusenc.js-cmd-switches" aria-hidden="true"><span class="octicon octicon-link"></span></a>Additional command line switches</h3>
           <div class="oe-console">
-            <pre class="oe-console">niceguy@rillke.com$ opusenc infile.[wav|flac|aiff] encoded.opus
-  <div style="display: inline-block; padding-left: 6em;"><input name="tags" id="oe-cmd-options" value="" placeholder="(e.g. in.wav out.opus --quiet)" style="width: 100%" class="oe-console" /></div>
+            <pre class="oe-console">encoder@rillke.com$ opusenc infile.[wav|flac|aiff] encoded.opus
+  <div style="display: inline-block; padding-left: 6em;"><input name="tags" id="oe-cmd-options" value="" placeholder="(e.g. in.wav out.opus --quiet)" style="width: 100%" class="oe-console" autocomplete="off" /></div>
   </pre>
           </div>
         </section>
@@ -260,6 +275,11 @@
 			</section>
 		</footer>
 	</div>
+
+  <!-- Drag & Drop info -->
+  <div class="ui-state-highlight oe-dnd-info">
+    Drop your file here!
+  </div>
 
   <!-- Demo JavaScript -->
   <script src="js/sample.tags.js"></script>

@@ -91,7 +91,8 @@
 			'regexp': /.*/
 		},
 		'help': {
-			'short': 'h'
+			'short': 'h',
+			'noinputfile': 1
 		},
 		'raw': {},
 		'raw-bits': {
@@ -119,9 +120,12 @@
 		},
 		'ignorelength': {},
 		'version': {
-			'short': 'V'
+			'short': 'V',
+			'noinputfile': 1
 		},
-		'version-short': {},
+		'version-short': {
+			'noinputfile': 1
+		},
 		'comment': {
 			'fmt': 'string',
 			'desc': 'Add the given string as an extra comment\n' +

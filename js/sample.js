@@ -20,21 +20,25 @@
  * IN THE SOFTWARE.
  */
 
-/*global tags: false, console: false, URL: false, saveAs: false*/
+/*global tags: false, console: false, URL: false, saveAs: false, alert: false*/
 /*jslint vars: false,  white: false */
 /*jshint onevar: false, white: false, laxbreak: true, worker: true */
 
 ( function( global ) {
 	'use strict';
 
-	var $button, $fileInput, $workerDlg, $workerProgress, $downloads, $console, $errors, $info, worker;
+	var $button, $fileInput, $workerDlg, $workerProgress, $downloads, $console, $errors, $info, worker, lastInFile;
 	var storedFiles = {},
 		outData = {},
+		pendingTagAttributes = [],
 		$cmd = $( '#oe-cmd-options' ),
+		allTags = {},
 		availableTags = $.map( tags, function( tagDetails, tag ) {
 			var ret = [ '--' + tag ];
+			allTags[ '--' + tag ] = tagDetails;
 			if ( tagDetails.short ) {
 				ret.push( '-' + tagDetails.short );
+				allTags[ '-' + tagDetails.short ] = tagDetails;
 			}
 			return ret;
 		} );
@@ -58,6 +62,7 @@
 		.addClass( 'oe-console-info' );
 
 	function refresh() {
+		outData = {};
 		$fileInput
 			.removeAttr( 'disabled' )
 			.closest( 'form' )[0]
@@ -75,6 +80,9 @@
 		$errors.empty();
 		worker = new Worker( 'worker/EmsWorkerProxy.js' );
 		worker.onmessage = onWorkerMessage;
+		if ( lastInFile ) {
+			delete storedFiles[ lastInFile ];
+		}
 	}
 
 	function log( txt ) {
@@ -86,92 +94,163 @@
 	function err( txt ) {
 		$errors
 			.clone()
-			.text( txt )
+			.text( txt.message || txt )
 			.appendTo( $console );
 	}
-	function encode() {
-		var f = $fileInput[ 0 ].files[ 0 ],
-			fr = new FileReader();
+	function encode( args ) {
+		var argsForCommandLine = args.slice( 0 );
 
-		$fileInput.attr( 'disabled', 'disabled' );
+		$.each( argsForCommandLine, function( idx, arg ) {
+			argsForCommandLine[ idx ] = arg.replace( /\"/g, '\\"' );
+		} );
+		log( 'encoder@rillke.com$ opusenc "' + argsForCommandLine.join( '" "' ) + '"' );
+		log( 'loading web worker scripts (1.2 MiB) ...' );
 
-		fr.addEventListener( 'loadend', function() {
-			var pastArg, args;
+		if ( !worker ) {
+			err( 'No webworker available.' );
+			err( 'Aborting.' );
+			$workerDlg
+				.dialog( 'option', 'title', 'Error - Failed to load web worker' )
+				.dialog( 'widget' )
+				.find( '.ui-dialog-titlebar' )
+				.show();
+			return;
+		}
+		worker.onerror = err;
 
-			$workerDlg.dialog( {
-				'modal': true,
-				'title': 'Encoding completed - encoded files and log available',
-				'closeOnEscape': false,
-				'dialogClass': 'oe-progress-dialog',
-				'width': 660,
-				'open': function() {
-					$( this )
-						.dialog( 'widget' )
-						.find( '.ui-dialog-titlebar' )
-						.hide();
-					$( document.body ).css( 'overflow', 'hidden' );
-				},
-				'close': function() {
-					$( document.body ).removeAttr( 'style' );
-					refresh();
-				}
-			} );
+		worker.postMessage( {
+			command: 'encode',
+			importRoot: '',
+			args: args,
+			outData: outData,
+			fileData: storedFiles
+		} );
+	}
+	function prepareWorkerDlg( encodedFilesAvailable ) {
+		$workerDlg.dialog( {
+			'modal': true,
+			'title': 'Encoding completed - '
+				+ ( encodedFilesAvailable ? 'encoded files and ' : '' )
+				+ 'log available',
+			'closeOnEscape': false,
+			'dialogClass': 'oe-progress-dialog',
+			'width': 660,
+			'open': function() {
+				$( this )
+					.dialog( 'widget' )
+					.find( '.ui-dialog-titlebar' )
+					.hide();
+				$( document.body ).css( 'overflow', 'hidden' );
+			},
+			'close': function() {
+				$( document.body ).removeAttr( 'style' );
+				refresh();
+			}
+		} );
+	}
+	function forEachArg( cb, args ) {
+		args = args || $cmd.tagit( 'assignedTags' );
+		$.each( args, function( i, arg ) {
+			var reSwitch = /^\-\-/,
+				argClean = arg.replace( reSwitch, '' );
 
-			args = $cmd.tagit( 'assignedTags' );
+			return cb( arg, reSwitch.test( arg ), argClean, tags[ argClean ] );
+		} );
+	}
+	function getArgs( buffInFile, inFileName ) {
+		var args = $cmd.tagit( 'assignedTags' ),
+			pastArg;
 
-			// Collect infos about files we want to get
-			// later out of the encoder
-			$.each( args, function( i, arg ) {
-				var reSwitch = /^\-\-/;
+		forEachArg( function( arg, isSwitch, cleanArg, argInfo ) {
+			var logMessage;
 
-				if ( pastArg ) {
-					outData[ arg ] = pastArg;
-					return pastArg = undefined;
-				}
-				if ( !reSwitch.test( arg ) ) {
-					return;
-				}
-				arg = arg.replace( reSwitch, '' );
-				pastArg = tags[ arg ].outfile;
-			} );
+			if ( pastArg ) {
+				outData[ arg ] = pastArg;
+				return pastArg = undefined;
+			}
+			if ( !isSwitch ) {
+				return;
+			}
 
-			storedFiles[ f.name ] = new Uint8Array( fr.result );
-			args.push( f.name );
+			if ( argInfo ) {
+				pastArg = argInfo.outfile;
+			} else {
+				pastArg = undefined;
+				logMessage = '"' + cleanArg + '" is an unknown command line switch.';
+				if ( console.warn ) console.warn( logMessage );
+				log( logMessage );
+			}
+		}, args );
+
+		if ( buffInFile ) {
+			lastInFile = inFileName;
+			storedFiles[ inFileName ] = new Uint8Array( buffInFile );
+			args.push( inFileName );
 			args.push( 'encoded.opus' );
 			outData[ 'encoded.opus' ] = {
 				'MIME': 'audio/ogg'
 			};
+		}
+		return args;
+	}
+	function prepareEncode( f ) {
+		var fr = new FileReader(),
+			args;
 
-			log( 'niceguy@rillke.com$ opusenc "' + args.join( '" "' ) + '"' );
-			log( 'loading web worker scripts (1.2 MiB) ...' );
+		f = f || $fileInput[ 0 ].files[ 0 ];
+		if ( f ) {
+			$fileInput.attr( 'disabled', 'disabled' );
 
-			if ( !worker ) {
-				err( 'No webworker available.' );
-				err( 'Aborting.' );
-				$workerDlg
-					.dialog( 'option', 'title', 'Error - Failed to load web worker' )
-					.dialog( 'widget' )
-					.find( '.ui-dialog-titlebar' )
-					.show();
-				return;
-			}
-			worker.onerror = err;
-
-			worker.postMessage( {
-				command: 'encode',
-				importRoot: '',
-				args: args,
-				outData: outData,
-				fileData: storedFiles
+			fr.addEventListener( 'loadend', function() {
+				prepareWorkerDlg( true );
+				args = getArgs( fr.result, f.name );
+				encode( args );
 			} );
+			fr.readAsArrayBuffer( f );
+		} else {
+			prepareWorkerDlg( false );
+			args = getArgs();
+			encode( args );
+		}
+	}
+
+	function showHideFileInput() {
+		$fileInput.show();
+		forEachArg( function( arg, isSwitch, cleanArg, argInfo ) {
+			argInfo = allTags[ arg ];
+			if ( argInfo && argInfo.noinputfile ) {
+				$fileInput.hide();
+				return false;
+			}
 		} );
-		fr.readAsArrayBuffer( f );
+	}
+
+	function beforeRemovedTag( e, ui ) {
+		var fileName = ui.tag.data( 'storedfile' );
+		if ( fileName ) {
+			delete storedFiles[ fileName ];
+		}
+
+		var belongsTo = ui.tag.data( 'belongsto' );
+		if ( belongsTo ) {
+			belongsTo.tag.find('.ui-icon-close').click();
+		}
 	}
 
 	function validateTag( e, ui ) {
-		var tagInfo;
+		var tagInfo, tagAttr;
 
 		if ( ui.duringInitialization ) return;
+		if ( !/^\-/.test( ui.tagLabel ) ) {
+			while ( pendingTagAttributes.length ) {
+				tagAttr = pendingTagAttributes.pop();
+				ui.tag[ tagAttr[0] ]( tagAttr[1], tagAttr[2] );
+			}
+			return;
+		}
+
+		showHideFileInput();
+
 		tagInfo = tags[ ui.tagLabel.replace( '--', '' ) ];
 		if ( !tagInfo || !tagInfo.fmt ) return;
 		var $dlg = $( '<form>' ),
@@ -244,7 +323,7 @@
 			}
 		} );
 		$dlg.submit( function( e ) {
-			var f, fr, fileName;
+			var f, fr, fileName, inputVal;
 
 			// Prevent submitting data to non-existant server
 			e.preventDefault();
@@ -257,18 +336,27 @@
 				.find( '.ui-dialog-titlebar,.ui-dialog-buttonpane' )
 				.hide();
 
-			$cmd.tagit( 'createTag', $input.val() );
+			pendingTagAttributes.push( [ 'data', 'belongsto', ui ] );
 			if ( tagInfo.infile ) {
 				f = $fileParamInput[ 0 ].files[ 0 ];
 				fr = new FileReader();
+				// jQuery TagIt does not like commas and returns multiple tags
+				// when programmatically adding tags with commans inside
+				inputVal = $input.val().replace( /,/g, '-' );
 
-				fileName = $input.val();
+				fileName = inputVal;
 				if ( /\|/.test( fileName ) ) {
 					fileName = fileName.replace( /(?:\|.+?)*\|(.+)$/, '$1' );
 				}
 
 				fr.addEventListener( 'loadend', function() {
+					if ( fileName in storedFiles ) {
+						alert( 'There is an existing file with the same name! It will be overwritten.' );
+					}
 					storedFiles[ fileName ] = new Uint8Array( fr.result );
+					pendingTagAttributes.push( [ 'attr', 'data-storedfile', fileName ] );
+
+					$cmd.tagit( 'createTag', fileName );
 					$dlg.remove();
 					$cmd.focus()
 						.next()
@@ -277,6 +365,7 @@
 				} );
 				fr.readAsArrayBuffer( f );
 			} else {
+				$cmd.tagit( 'createTag', inputVal );
 				$dlg.remove();
 				$cmd.focus()
 					.next()
@@ -287,6 +376,23 @@
 		setTimeout( function() {
 			$dlg.dialog( 'open' );
 		}, 5 );
+	}
+
+	function cancelWorker( title ) {
+		$workerDlg
+			.dialog( {
+				'closeOnEscape': true
+			} )
+			.dialog( 'widget' )
+			.find( '.ui-dialog-titlebar' )
+			.fadeIn( 'slow' );
+
+		if ( title ) {
+			$workerDlg.dialog( 'option', 'title', title );
+		}
+		$workerProgress.fadeOut( 'slow' );
+		worker.terminate();
+		worker = null;
 	}
 
 	function onWorkerMessage( e ) {
@@ -328,17 +434,7 @@
 					$downloads.append( ' ' );
 				}
 
-				$workerDlg
-					.dialog( {
-						'closeOnEscape': true
-					} )
-					.dialog( 'widget' )
-					.find( '.ui-dialog-titlebar' )
-					.fadeIn( 'slow' );
-
-				$workerProgress.fadeOut( 'slow' );
-				worker.terminate();
-				worker = null;
+				cancelWorker();
 				break;
 			case 'log':
 				var lines = $.trim( e.data.values[ 0 ] ).replace( /\r/g, '\n' ),
@@ -354,6 +450,7 @@
 				break;
 			case 'err':
 				err( e.data.values[ 0 ] );
+				setTimeout( cancelWorker.bind( global, "Error" ), 100 );
 				break;
 		}
 	}
@@ -363,7 +460,9 @@
 		availableTags: availableTags,
 		removeConfirmation: true,
 		allowDuplicates: true,
-		beforeTagAdded: validateTag
+		afterTagAdded: validateTag,
+		beforeTagRemoved: beforeRemovedTag,
+		afterTagRemoved: showHideFileInput
 	} );
 
 	try {
@@ -399,8 +498,11 @@
 		} );
 	}
 
-	$fileInput.change( encode );
+	$fileInput.change( prepareEncode.bind( global, undefined ) );
 	$.each( [ 'focus', 'blur', 'mouseenter', 'mouseout', 'mousedown', 'mouseup' ], bindEvent );
+	$button.click( function() {
+		$fileInput.triggerHandler( 'change' );
+	} );
 
 	// Forward focus from command line fake console to input
 	$( '#oe-command-line-options .oe-console' )
@@ -411,4 +513,27 @@
 
    // No runtime error so far, so hide the warning
 	$( '.oe-js-warn' ).hide();
+
+	// Implement drag & drop
+	$( document.body )
+		.on( {
+			drop: function( e ) {
+				var f = e.originalEvent.dataTransfer.files[0];
+				e.preventDefault();
+				$( this ).removeClass( 'oe-acceptdrop' );
+
+				if ( f ) prepareEncode( f );
+			},
+			dragover: function( e ) {
+				e.preventDefault();
+				$( this ).addClass( 'oe-acceptdrop' );
+			},
+			dragleave: function () {
+				$( this ).removeClass( 'oe-acceptdrop' );
+			},
+			dragend: function ( e ) {
+				e.preventDefault();
+				$( this ).removeClass( 'oe-acceptdrop' );
+			}
+		} );
 }( window ) );
