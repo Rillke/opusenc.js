@@ -25,131 +25,12 @@
 /*jshint onevar: false, white: false, laxbreak: true, worker: true, strict: false */
 
 ( function( global ) {
-	/* jshint evil: true */
-	global.callEval = function ( s ) {
-		var Module = global.Module,
-			ret = eval( s );
-
-		global.FS = FS;
-		global.Module = Module;
-		global.Runtime = Runtime;
-		return ret;
-	};
-}( self ) );
-
-( function( global ) {
 	'use strict';
 	var runDependencies = 0,
 		MainScriptLoader,
 		downloadCompleted,
 		downloadError,
 		queue = [];
-
-	/**
-	 * Downloads main script
-	 *  @class MainScriptLoader
-	 *  @singleton
-	 *  @private
-	 */
-	MainScriptLoader = {
-		name: 'opusenc.js',
-		text: null,
-		status: 'idle',
-		xhrload: function( data, complete, err ) {
-			data.importRoot = data.importRoot || '';
-
-			var xhrfailed = function( errMsg ) {
-				if ( MainScriptLoader.status !== 'loading' ) {
-					return;
-				}
-				MainScriptLoader.status = 'xhrfailed';
-				MainScriptLoader.onDownloadError( errMsg );
-				if ( err ) err();
-			};
-
-			var xhr = new XMLHttpRequest();
-			xhr.onreadystatechange = function() {
-				if ( xhr.readyState === xhr.DONE ) {
-					if ( xhr.status === 200 || xhr.status === 0 && location.protocol === 'file:' ) {
-						MainScriptLoader.text = xhr.responseText;
-						MainScriptLoader.status = 'loaded';
-						MainScriptLoader.onDownloadComplete();
-						if ( complete ) complete();
-						if ( downloadCompleted ) downloadCompleted();
-					} else {
-						xhrfailed( 'Server status ' +  xhr.status );
-					}
-				}
-			};
-			xhr.onprogress = function( e ) {
-				if ( e.lengthComputable ) {
-					MainScriptLoader.onDownloadProgress( e.loaded, e.total );
-				}
-			};
-			xhr.onerror = function() {
-				xhrfailed( 'There was an error with the request.' );
-			};
-			xhr.ontimeout = function() {
-				xhrfailed( 'Request timed out.' );
-			};
-
-			try {
-				MainScriptLoader.status = 'loading';
-				xhr.open( 'GET', data.importRoot + MainScriptLoader.name );
-				xhr.send( null );
-			} catch ( ex ) {
-				xhrfailed( ex.message || ex );
-			}
-		},
-		onDownloadProgress: function( /* loaded, total */ ) {},
-		onDownloadComplete: function() {},
-		onDownloadError: function( /* description */ ) {},
-		downloadAndExecute: function( data, beforeExecution, afterExecution ) {
-			switch ( MainScriptLoader.status ) {
-				case 'idle':
-					MainScriptLoader.xhrload( data, function() {
-						beforeExecution();
-						MainScriptLoader.execute();
-						afterExecution();
-					}, function() {
-						beforeExecution();
-						importScripts( ( data.importRoot || '' ) + MainScriptLoader.name );
-						afterExecution();
-					} );
-					break;
-				case 'xhrfailed':
-					beforeExecution();
-					importScripts( ( data.importRoot || '' ) + MainScriptLoader.name );
-					afterExecution();
-					break;
-				case 'loaded':
-					beforeExecution();
-					MainScriptLoader.execute();
-					afterExecution();
-					break;
-				case 'loading':
-					downloadCompleted = function() {
-						downloadCompleted = null;
-						downloadError = null;
-						beforeExecution();
-						MainScriptLoader.execute();
-						afterExecution();
-					};
-					downloadError = function() {
-						beforeExecution();
-						importScripts( ( data.importRoot || '' ) + MainScriptLoader.name );
-						afterExecution();
-					};
-					break;
-			}
-		},
-		execute: function() {
-			if ( !MainScriptLoader.text ) {
-				throw new Error( 'Main script text must be loaded before!' );
-			}
-			global.callEval( MainScriptLoader.text );
-		}
-	};
 
 	/**
 	 * Manages encoding and progress notifications
@@ -167,8 +48,7 @@
 				}
 				OpusEncoder.setUpModule( data );
 			}, function() {
-				// After executed the main script ...
-				OpusEncoder.setUpFilesystem();
+				// After the main script was executed ...
 				setTimeout( function() {
 					if ( !runDependencies ) {
 						OpusEncoder._encode( data );
@@ -251,6 +131,7 @@
 
 			global.Module = {
 				TOTAL_MEMORY: memRequired,
+				preRun: OpusEncoder.setUpFilesystem,
 				printErr: console.error.bind( console ),
 				monitorRunDependencies: function( runDeps ) {
 					runDependencies = runDeps;
@@ -419,4 +300,123 @@
 		}
 	};
 
+	/**
+	 * Downloads main script
+	 *  @class MainScriptLoader
+	 *  @singleton
+	 *  @private
+	 */
+	MainScriptLoader = {
+		name: 'opusenc.js',
+		text: null,
+		status: 'idle',
+		xhrload: function( data, complete, err ) {
+			data.importRoot = data.importRoot || '';
+
+			var xhrfailed = function( errMsg ) {
+				if ( MainScriptLoader.status !== 'loading' ) {
+					return;
+				}
+				MainScriptLoader.status = 'xhrfailed';
+				MainScriptLoader.onDownloadError( errMsg );
+				if ( err ) err();
+			};
+
+			var xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = function() {
+				if ( xhr.readyState === xhr.DONE ) {
+					if ( xhr.status === 200 || xhr.status === 0 && location.protocol === 'file:' ) {
+						MainScriptLoader.text = xhr.responseText;
+						MainScriptLoader.status = 'loaded';
+						MainScriptLoader.onDownloadComplete();
+						if ( complete ) complete();
+						if ( downloadCompleted ) downloadCompleted();
+					} else {
+						xhrfailed( 'Server status ' +  xhr.status );
+					}
+				}
+			};
+			xhr.onprogress = function( e ) {
+				if ( e.lengthComputable ) {
+					MainScriptLoader.onDownloadProgress( e.loaded, e.total );
+				}
+			};
+			xhr.onerror = function() {
+				xhrfailed( 'There was an error with the request.' );
+			};
+			xhr.ontimeout = function() {
+				xhrfailed( 'Request timed out.' );
+			};
+
+			try {
+				MainScriptLoader.status = 'loading';
+				xhr.open( 'GET', data.importRoot + MainScriptLoader.name );
+				xhr.send( null );
+			} catch ( ex ) {
+				xhrfailed( ex.message || ex );
+			}
+		},
+		onDownloadProgress: function( /* loaded, total */ ) {},
+		onDownloadComplete: function() {},
+		onDownloadError: function( /* description */ ) {},
+		downloadAndExecute: function( data, beforeExecution, afterExecution ) {
+			switch ( MainScriptLoader.status ) {
+				case 'idle':
+					MainScriptLoader.xhrload( data, function() {
+						beforeExecution();
+						MainScriptLoader.execute();
+						afterExecution();
+					}, function() {
+						beforeExecution();
+						importScripts( ( data.importRoot || '' ) + MainScriptLoader.name );
+						afterExecution();
+					} );
+					break;
+				case 'xhrfailed':
+					beforeExecution();
+					importScripts( ( data.importRoot || '' ) + MainScriptLoader.name );
+					afterExecution();
+					break;
+				case 'loaded':
+					beforeExecution();
+					MainScriptLoader.execute();
+					afterExecution();
+					break;
+				case 'loading':
+					downloadCompleted = function() {
+						downloadCompleted = null;
+						downloadError = null;
+						beforeExecution();
+						MainScriptLoader.execute();
+						afterExecution();
+					};
+					downloadError = function() {
+						beforeExecution();
+						importScripts( ( data.importRoot || '' ) + MainScriptLoader.name );
+						afterExecution();
+					};
+					break;
+			}
+		},
+		execute: function() {
+			if ( !MainScriptLoader.text ) {
+				throw new Error( 'Main script text must be loaded before!' );
+			}
+			global.callEval( MainScriptLoader.text );
+		}
+	};
+
+}( self ) );
+
+( function( global ) {
+	/* jshint evil: true */
+	global.callEval = function ( s ) {
+		var Module = global.Module,
+			ret = eval( s );
+
+		global.FS = FS;
+		global.Module = Module;
+		global.Runtime = Runtime;
+		return ret;
+	};
 }( self ) );
