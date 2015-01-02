@@ -336,13 +336,14 @@
 				.find( '.ui-dialog-titlebar,.ui-dialog-buttonpane' )
 				.hide();
 
+			// jQuery TagIt does not like commas and returns multiple tags
+			// when programmatically adding tags with commans inside
+			inputVal = $input.val().replace( /,/g, '-' );
+
 			pendingTagAttributes.push( [ 'data', 'belongsto', ui ] );
 			if ( tagInfo.infile ) {
 				f = $fileParamInput[ 0 ].files[ 0 ];
 				fr = new FileReader();
-				// jQuery TagIt does not like commas and returns multiple tags
-				// when programmatically adding tags with commans inside
-				inputVal = $input.val().replace( /,/g, '-' );
 
 				fileName = inputVal;
 				if ( /\|/.test( fileName ) ) {
