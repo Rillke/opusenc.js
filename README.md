@@ -8,11 +8,14 @@ Opusenc.js encodes whole files to ogg-opus; this is Opus encapsulated into an Og
 
 opusenc.js was built with Emscripten.
 
-## Prerequisites
+## Building
+If you just want to use opusenc.js, you don't have to build it. In this case, see [using](#Using) instead.
+
+### Prerequisites
 - A recent linux build system
 - Emscripten 1.25.0 installed and activated
 
-## Building
+### Build script
 ```bash
 git clone git://github.com/Rillke/opusenc.js.git opusenc.js
 git submodule update --init
