@@ -20,6 +20,41 @@ cd opusenc.js
 ./make.sh
 ```
 
+## Using
+A pre-compiled script together with some auxiliary scripts making use from JavaScript easier is in the `/worker` directory.
+[iframe.html](iframe.html) is a minimal usage example. [Test it live](https://rawgit.com/Rillke/opusenc.js/master/iframe.html). It starts the encoding process posting `command: 'encode'` to the worker:
+```JavaScript
+var worker = new Worker( 'worker/EmsWorkerProxy.js' );
+// Files to be read and posted back
+// after encoding completed
+var outData = {
+  // File name
+	'encoded.opus': {
+	  // MIME type
+  	'MIME': 'audio/ogg'
+	}
+};
+
+worker.onmessage = function( e ) {
+  // Handle incoming data
+};
+
+// Prepare files etc.
+worker.postMessage( {
+	command: 'encode',
+	args: args,
+	outData: outData,
+	fileData: storedFiles
+} );
+```
+
+- `command`: 'encode'|'prefetch' (starts encoding or prefetching the 850 KiB worker script)
+- `args`: Array holding the command line arguments (DOMString)
+- `outData`: Information about the files that should be read out of the worker's file system after encoding completed
+- `fileData`: Object literal of input file data mapping file names to `Uint8Array`s
+
+A more extensive example is available on the [project's website](https://blog.rillke.com/opusenc.js/).
+
 ## Contributing
 Submit patches to this GitHub repository or [file issues](https://github.com/Rillke/opusenc.js/issues).
 
