@@ -30,13 +30,13 @@ var worker = new Worker( 'worker/EmsWorkerProxy.js' );
 var outData = {
   // File name
 	'encoded.opus': {
-	  // MIME type
-  	'MIME': 'audio/ogg'
+		  // MIME type
+  		'MIME': 'audio/ogg'
 	}
 };
 
 worker.onmessage = function( e ) {
-  // Handle incoming data
+	// Handle incoming data
 };
 
 // Prepare files etc.
@@ -51,9 +51,9 @@ worker.postMessage( {
 } );
 ```
 
-- `command`: 'encode'|'prefetch' (starts encoding or prefetching the 850 KiB worker script)
+- `command`: `'encode'|'prefetch'` DOMString that either starts encoding or prefetching the 850 KiB worker script. Posting a prefetch command in advance is optional, depends on the user experience you'd like to create and does not require further arguments. If the script is not prefetched, it will be downloaded when `'encode'` is invoked.
 - `args`: Array holding the command line arguments (DOMString)
-- `outData`: Information about the files that should be read out of the worker's file system after encoding completed
+- `outData`: Object literal of information about the files that should be read out of the worker's file system after encoding completed
 - `fileData`: Object literal of input file data mapping file names to `Uint8Array`s
 
 A more extensive example is available on the [project's website](https://blog.rillke.com/opusenc.js/).
