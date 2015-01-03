@@ -40,15 +40,13 @@
 						break;
 					case 'encode':
 						if ( !global.OpusEncoder )  {
-							e.data.importRoot = e.data.importRoot || '';
-							importScripts( e.data.importRoot + 'OpusEncoder.js' );
+							importScripts( 'OpusEncoder.js' );
 						}
 						OpusEncoder.encode( e.data );
 						break;
 					case 'prefetch':
 						if ( !global.OpusEncoder )  {
-							e.data.importRoot = e.data.importRoot || '';
-							importScripts( e.data.importRoot + 'OpusEncoder.js' );
+							importScripts( 'OpusEncoder.js' );
 							OpusEncoder.prefetch( e.data );
 						}
 						break;
