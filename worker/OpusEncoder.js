@@ -42,7 +42,7 @@
 			MainScriptLoader.downloadAndExecute( data, function() {
 				// Before execute main script ...
 				if ( !global.EmsArgs ){
-					importScripts( data.importRoot + 'EmsArgs.js' );
+					importScripts( 'EmsArgs.js' );
 				}
 				OpusEncoder.setUpModule( data );
 			}, function() {
@@ -59,7 +59,7 @@
 			}
 			OpusEncoder.setUpLogging( data );
 			MainScriptLoader.xhrload( data );
-			importScripts( data.importRoot + 'EmsArgs.js' );
+			importScripts( 'EmsArgs.js' );
 		},
 
 		setUpLogging: function( data ) {
@@ -298,8 +298,6 @@
 		text: null,
 		status: 'idle',
 		xhrload: function( data, complete, err ) {
-			data.importRoot = data.importRoot || '';
-
 			var xhrfailed = function( errMsg ) {
 				if ( MainScriptLoader.status !== 'loading' ) {
 					return;
@@ -342,7 +340,7 @@
 
 			try {
 				MainScriptLoader.status = 'loading';
-				xhr.open( 'GET', data.importRoot + MainScriptLoader.name );
+				xhr.open( 'GET', MainScriptLoader.name );
 				xhr.send( null );
 			} catch ( ex ) {
 				xhrfailed( ex.message || ex );
@@ -360,13 +358,13 @@
 						afterExecution();
 					}, function() {
 						beforeExecution();
-						importScripts( ( data.importRoot || '' ) + MainScriptLoader.name );
+						importScripts( MainScriptLoader.name );
 						afterExecution();
 					} );
 					break;
 				case 'xhrfailed':
 					beforeExecution();
-					importScripts( ( data.importRoot || '' ) + MainScriptLoader.name );
+					importScripts( MainScriptLoader.name );
 					afterExecution();
 					break;
 				case 'loaded':
@@ -384,7 +382,7 @@
 					};
 					downloadError = function() {
 						beforeExecution();
-						importScripts( ( data.importRoot || '' ) + MainScriptLoader.name );
+						importScripts( MainScriptLoader.name );
 						afterExecution();
 					};
 					break;

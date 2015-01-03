@@ -120,7 +120,6 @@
 
 		worker.postMessage( {
 			command: 'encode',
-			importRoot: '',
 			args: args,
 			outData: outData,
 			fileData: storedFiles
@@ -469,8 +468,7 @@
 	try {
 		worker = new Worker( 'worker/EmsWorkerProxy.js' );
 		worker.postMessage( {
-			command: 'prefetch',
-			importRoot: ''
+			command: 'prefetch'
 		} );
 		worker.onmessage = onWorkerMessage;
 	} catch ( ex ) {
