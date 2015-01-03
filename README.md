@@ -40,6 +40,9 @@ worker.onmessage = function( e ) {
 };
 
 // Prepare files etc.
+
+// Post all data and the encode command
+// to the web worker
 worker.postMessage( {
 	command: 'encode',
 	args: args,
