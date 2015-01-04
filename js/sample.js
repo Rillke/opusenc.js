@@ -28,6 +28,8 @@
 	'use strict';
 
 	var $button, $fileInput, $workerDlg, $workerProgress, $downloads, $console, $errors, $info, worker, lastInFile;
+	var __onDrop, __onDragOver;
+	var $body = $( document.body );
 	var storedFiles = {},
 		outData = {},
 		pendingTagAttributes = [],
@@ -67,6 +69,10 @@
 			.removeAttr( 'disabled' )
 			.closest( 'form' )[0]
 			.reset();
+		$body.on( {
+			drop: __onDrop,
+			dragover: __onDragOver
+		} );
 		$console.empty();
 		$downloads.find( 'a' ).each( function() {
 			try {
@@ -139,10 +145,10 @@
 					.dialog( 'widget' )
 					.find( '.ui-dialog-titlebar' )
 					.hide();
-				$( document.body ).css( 'overflow', 'hidden' );
+				$body.css( 'overflow', 'hidden' );
 			},
 			'close': function() {
-				$( document.body ).removeAttr( 'style' );
+				$body.removeAttr( 'style' );
 				refresh();
 			}
 		} );
@@ -199,6 +205,7 @@
 		f = f || $fileInput[ 0 ].files[ 0 ];
 		if ( f ) {
 			$fileInput.attr( 'disabled', 'disabled' );
+			$body.off( 'dragover drop' );
 
 			fr.addEventListener( 'loadend', function() {
 				prepareWorkerDlg( true );
@@ -513,20 +520,24 @@
    // No runtime error so far, so hide the warning
 	$( '.oe-js-warn' ).hide();
 
-	// Implement drag & drop
-	$( document.body )
-		.on( {
-			drop: function( e ) {
-				var f = e.originalEvent.dataTransfer.files[0];
-				e.preventDefault();
-				$( this ).removeClass( 'oe-acceptdrop' );
+	__onDragOver = function( e ) {
+		e.preventDefault();
+		$( this ).addClass( 'oe-acceptdrop' );
+	};
 
-				if ( f ) prepareEncode( f );
-			},
-			dragover: function( e ) {
-				e.preventDefault();
-				$( this ).addClass( 'oe-acceptdrop' );
-			},
+	__onDrop = function( e ) {
+		var f = e.originalEvent.dataTransfer.files[0];
+		e.preventDefault();
+		$( this ).removeClass( 'oe-acceptdrop' );
+
+		if ( f ) prepareEncode( f );
+	};
+
+	// Implement drag & drop
+	$body
+		.on( {
+			drop: __onDrop,
+			dragover: __onDragOver,
 			dragleave: function () {
 				$( this ).removeClass( 'oe-acceptdrop' );
 			},
