@@ -38,10 +38,6 @@ echo -----------------------------------
 emconfigure ./configure CFLAGS="-O3" --disable-extra-programs
 emmake make
 export OPUSDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/
-echo ---------------------------
-echo Opus directory
-echo $OPUSDIR
-echo ---------------------------
 cd ..
 
 cd opus-tools
@@ -64,7 +60,7 @@ mv opusenc opusenc.so
 echo -----------------------------------
 echo Building JavaScript
 echo -----------------------------------
-em++ -O3 $OGGDIR"lib/libogg.so" $FLACDIR"src/libFLAC/.libs/libFLAC.so" $OPUSDIR".libs/libopus.so" opusenc.so -o opusenc.html -s EXPORTED_FUNCTIONS="['_opus_decoder_create', '_opus_decode_float', '_opus_decoder_destroy', '_encode_buffer', '_main']" -s RESERVED_FUNCTION_POINTERS=1
+em++ -O3 $OGGDIR"lib/libogg.so" $FLACDIR"src/libFLAC/.libs/libFLAC.so" $OPUSDIR".libs/libopus.so" opusenc.so -o opusenc.html -s EXPORTED_FUNCTIONS="['_opus_decoder_create', '_opus_decode_float', '_opus_decoder_destroy', '_encode_buffer']" -s RESERVED_FUNCTION_POINTERS=1
 cp -f opusenc.js ../worker/opusenc.js
 cp -f opusenc.html.mem ../worker/opusenc.data.js
 cd ..
