@@ -204,8 +204,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Other software licenses
 ------------------------------------------------------------------
-For every other file included in this repository, its license is provided within each file. Everything written by me (Rillke) is available under the [MIT license](http://opensource.org/licenses/MIT) and, at your option under [CC-By-SA 3.0](http://creativecommons.org/licenses/by-sa/3.0/) and, at your option under the three-clause BSD license.
+For every other file included in this repository, its license is provided within each file. Everything written by Rillke is available under the [MIT license](http://opensource.org/licenses/MIT) and, at your option under [CC-By-SA 3.0](http://creativecommons.org/licenses/by-sa/3.0/) and, at your option under the three-clause BSD license.
 
+Contributor's license
+------------------------------------------------------------------
+If you submit a patch to this repository, you agree to license your code under the license the concerning file is licensed under and additionally under the [MIT license](http://opensource.org/licenses/MIT), [CC-By-SA 3.0](http://creativecommons.org/licenses/by-sa/3.0/) and the three-clause BSD license.
 
 Patent licenses
 ====================================================================
