@@ -48,10 +48,10 @@ and as an expression of appreciation, endorsed development of opusenc.js.
     * "lvqcl" <lvqcl@users.sourceforge.net>
 
 * Emscripten
-    * @kripken, @kripken and a lot more
+    * @kripken (Alon Zakai) [and others](https://github.com/kripken/emscripten/blob/master/AUTHORS)
 
 * LLVM
-    * LLVM Developer Group 
+    * [LLVM Developer Group](https://github.com/llvm-mirror/llvm/blob/master/CREDITS.TXT)
 
 Software licenses
 ====================================================================
