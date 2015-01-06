@@ -31,10 +31,10 @@ var worker = new Worker( 'worker/EmsWorkerProxy.js' );
 // Files to be read and posted back
 // after encoding completed
 var outData = {
-  // File name
+	// File name
 	'encoded.opus': {
-		  // MIME type
-  		'MIME': 'audio/ogg'
+		// MIME type
+		'MIME': 'audio/ogg'
 	}
 };
 
