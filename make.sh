@@ -1,11 +1,4 @@
 #!/bin/sh
-cd opus-tools
-rm libogg.a
-rm libopus.a
-rm libFLAC-static.a
-rm opusenc.so
-cd ..
-
 cd libogg
 echo -----------------------------------
 echo Making libogg
@@ -44,6 +37,8 @@ cd opus-tools
 echo -----------------------------------
 echo Building Opus-tools
 echo -----------------------------------
+rm opusenc.so
+
 ./autogen.sh
 export OGG_CFLAGS="-I"$OGGDIR"ogg/"
 export OGG_LIBS="-L"$OGGDIR"lib/"
