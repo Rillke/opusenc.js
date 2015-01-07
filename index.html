@@ -16,7 +16,7 @@
 
 	<link href="css/jquery.tagit.css" rel="stylesheet" type="text/css">
 	<script src="js/tag-it.js"></script>
-  <script src="js/FileSaver.js" async="async"></script>
+	<script src="js/FileSaver.js" async="async"></script>
 
 	<title>Opusenc.js</title>
 
@@ -58,7 +58,7 @@
 		.oe-console,
 		.oe-console .tagit,
 		.oe-console input,
-    .oe-console pre {
+		.oe-console pre {
 			background: none repeat scroll 0% 0% black;
 			color: white;
 			font-family: "Lucida Console", Console, monospace;
@@ -76,37 +76,38 @@
 		.tagit-new input {
 			min-width: 15em;
 		}
-    pre.oe-console-errors {
-      color: #FF7373;
-    }
-    .oe-browser-support-check {
-      white-space: nowrap;
-    }
-    .oe-console-info, .oe-console-errors {
-      width: 100%;
-      border: medium none;
-      padding: 0px;
-      white-space: pre-wrap;
-    }
-    .oe-file-warn {
-      display: none;
-    }
-    body.oe-acceptdrop #main_content_wrap {
-      background-color: #B7D9E0;
-    }
-    .oe-dnd-info {
-      position: fixed;
-      padding: 4em;
-      top: 50%;
-      left: 50%;
-      margin-left: -6em;
-      margin-top: -4.5em;
-      font-size: 2em;
-      display: none;
-    }
-    .oe-acceptdrop .oe-dnd-info {
-      display: block;
-    }
+		pre.oe-console-errors {
+			color: #FF7373;
+		}
+		.oe-browser-support-check {
+			white-space: nowrap;
+		}
+		.oe-console-info,
+		.oe-console-errors {
+			width: 100%;
+			border: medium none;
+			padding: 0px;
+			white-space: pre-wrap;
+		}
+		.oe-file-warn {
+			display: none;
+		}
+		body.oe-acceptdrop #main_content_wrap {
+			background-color: #B7D9E0;
+		}
+		.oe-dnd-info {
+			position: fixed;
+			padding: 4em;
+			top: 50%;
+			left: 50%;
+			margin-left: -6em;
+			margin-top: -4.5em;
+			font-size: 2em;
+			display: none;
+		}
+		.oe-acceptdrop .oe-dnd-info {
+			display: block;
+		}
 	</style>
 
 </head>
@@ -114,18 +115,18 @@
 <body>
 	<!-- HEADER -->
 	<div id="header_wrap" class="outer">
-    <div class="ui-widget oe-js-warn">
-      <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
-        <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em; margin-top: .3em;"></span>
-        <strong>JavaScript error:</strong> Either JavaScript is still loading, it is disabled or something went terribly wrong. The demo will most likely not work. Please <a href="https://github.com/Rillke/opusenc.js/issues"><u>report this issue</u></a> so it can be fixed.</p>
-      </div>
-    </div>
-    <div class="ui-widget oe-file-warn">
-      <div class="ui-state-highlight ui-corner-all" style="padding: 0 .7em;">
-        <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em; margin-top: .3em;"></span>
-        <strong>Running from file:///</strong> When running from file:/// protocol, it might be impossible to load the worker code due to security restrictions. Chrome and Opera can be started with the <code>--allow-file-access-from-files</code> command line argument to bypass this kind of protection. However, if access from files is granted, the browser should not be used to browse other sites.</p>
-      </div>
-    </div>
+		<div class="ui-widget oe-js-warn">
+			<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
+				<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em; margin-top: .3em;"></span>
+					<strong>JavaScript error:</strong> Either JavaScript is still loading, it is disabled or something went terribly wrong. The demo will most likely not work. Please <a href="https://github.com/Rillke/opusenc.js/issues"><u>report this issue</u></a> so it can be fixed.</p>
+			</div>
+		</div>
+		<div class="ui-widget oe-file-warn">
+			<div class="ui-state-highlight ui-corner-all" style="padding: 0 .7em;">
+				<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em; margin-top: .3em;"></span>
+					<strong>Running from file:///</strong> When running from file:/// protocol, it might be impossible to load the worker code due to security restrictions. Chrome and Opera can be started with the <code>--allow-file-access-from-files</code> command line argument to bypass this kind of protection. However, if access from files is granted, the browser should not be used to browse other sites.</p>
+			</div>
+		</div>
 		<header class="inner">
 			<a id="forkme_banner" href="https://github.com/Rillke/opusenc.js">View on GitHub</a>
 
@@ -142,60 +143,55 @@
 	<!-- MAIN CONTENT -->
 	<article id="main_content_wrap" class="outer">
 		<section id="main_content" class="inner">
-      <strong>Opusenc.js</strong> is a JavaScript port of the <a href="https://mf4.xiph.org/jenkins/view/opus/job/opus-tools/ws/man/opusenc.html"><em>opusenc</em> tool</a>, which in turn is part of the <a href="//www.opus-codec.org/downloads/"><em>opus-tools</em></a> collection, created with <em>Emscripten</em>. To say it in simple words, one could <a href="https://github.com/Rillke/opusenc.js/zipball/gh-pages"><strong>download</strong> all the static files</a> making up this page and running them offline in a modern browser. No server side processing is required. Together with the sound recording API of contemporary browsers, one can not only build <em>powerful audio editing solutions</em> but also <a href="https://github.com/Rillke/Recorderjs#recorderjs"><em>sound recording tools</em></a>.
-      <br />
-      What is Opus and why is Opus great:
-      <blockquote>
-        <p>Opus is a totally open, royalty-free, highly versatile audio codec. Opus is
-          unmatched for interactive speech and music transmission over the Internet,
-          but is also intended for storage and streaming applications. It is
-          standardized by the Internet Engineering Task Force (IETF) as <a href="//tools.ietf.org/html/rfc6716">RFC 6716</a>
-          which incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.
-        </p>
-        <cite><a href="//opus-codec.org/">opus-codec.org</a></cite>
-      </blockquote>
-      They are humble enough not to mention those fairly <strong>high compression rates</strong> while still preserving a <strong>superior audio quality</strong>.
-      <section id="oe-demo">
-        <h2>
+			<strong>Opusenc.js</strong> is a JavaScript port of the <a href="https://mf4.xiph.org/jenkins/view/opus/job/opus-tools/ws/man/opusenc.html"><em>opusenc</em> tool</a>, which in turn is part of the <a href="//www.opus-codec.org/downloads/"><em>opus-tools</em></a> collection, created with <em>Emscripten</em>. To say it in simple words, one could <a href="https://github.com/Rillke/opusenc.js/zipball/gh-pages"><strong>download</strong> all the static files</a> making up this page and running them offline in a modern browser. No server side processing is required. Together with the sound recording API of contemporary browsers, one can not only build <em>powerful audio editing solutions</em> but also <a href="https://github.com/Rillke/Recorderjs#recorderjs"><em>sound recording tools</em></a>.
+			<br /> What is Opus and why is Opus great:
+			<blockquote>
+				<p>Opus is a totally open, royalty-free, highly versatile audio codec. Opus is unmatched for interactive speech and music transmission over the Internet, but is also intended for storage and streaming applications. It is standardized by the Internet Engineering Task Force (IETF) as <a href="//tools.ietf.org/html/rfc6716">RFC 6716</a> which incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.
+				</p>
+				<cite><a href="//opus-codec.org/">opus-codec.org</a></cite>
+			</blockquote>
+			They are humble enough not to mention those fairly <strong>high compression rates</strong> while still preserving a <strong>superior audio quality</strong>.
+			<section id="oe-demo">
+				<h2>
   <a id="opusenc.js-demo" class="anchor" href="#opusenc.js-demo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demo</h2>
-        <p>Try Opusenc.js, right here, right now. Clicking <em>run</em> will prompt for a WAV, FLAC, OGG, AIFF, or <abbr title="Raw files require feeding opusenc with additional information through command line switches; type --raw for suggestions">RAW<sup>*</sup></abbr> file.</p>
+				<p>Try Opusenc.js, right here, right now. Clicking <em>run</em> will prompt for a WAV, FLAC, OGG, AIFF, or <abbr title="Raw files require feeding opusenc with additional information through command line switches; type --raw for suggestions">RAW<sup>*</sup></abbr> file.</p>
 
-        <!-- Browser support check -->
-        <section id="oe-browser-support">
-          <h3>
+				<!-- Browser support check -->
+				<section id="oe-browser-support">
+					<h3>
   <a id="opusenc.js-browser-support" class="anchor" href="#opusenc.js-browser-support" aria-hidden="true"><span class="octicon octicon-link"></span></a>Browser support</h3>
-          <p>In order to run Opusenc in a browser, there has to be support for a couple of HTML5 features.</p>
+					<p>In order to run Opusenc in a browser, there has to be support for a couple of HTML5 features.</p>
 
-          <code class="oe-browser-support-check"><span class="ui-icon ui-icon-alert oe-js-no"></span><span class="ui-icon ui-icon-check oe-js-yes"></span> JavaScript</code>
-          <code class="oe-browser-support-check"><span class="ui-icon ui-icon-alert oe-pm-no"></span><span class="ui-icon ui-icon-check oe-pm-yes"></span> PostMessage</code>
-          <code class="oe-browser-support-check"><span class="ui-icon ui-icon-alert oe-ww-no"></span><span class="ui-icon ui-icon-check oe-ww-yes"></span> WebWorkers</code>
-          <code class="oe-browser-support-check"><span class="ui-icon ui-icon-alert oe-bc-no"></span><span class="ui-icon ui-icon-check oe-bc-yes"></span> Blob constructor</code>
+					<code class="oe-browser-support-check"><span class="ui-icon ui-icon-alert oe-js-no"></span><span class="ui-icon ui-icon-check oe-js-yes"></span> JavaScript</code>
+					<code class="oe-browser-support-check"><span class="ui-icon ui-icon-alert oe-pm-no"></span><span class="ui-icon ui-icon-check oe-pm-yes"></span> PostMessage</code>
+					<code class="oe-browser-support-check"><span class="ui-icon ui-icon-alert oe-ww-no"></span><span class="ui-icon ui-icon-check oe-ww-yes"></span> WebWorkers</code>
+					<code class="oe-browser-support-check"><span class="ui-icon ui-icon-alert oe-bc-no"></span><span class="ui-icon ui-icon-check oe-bc-yes"></span> Blob constructor</code>
 
-        </section>
+				</section>
 
-        <!-- Command line switches -->
-        <section id="oe-command-line-options">
-          <h3><a id="opusenc.js-cmd-switches" class="anchor" href="#opusenc.js-cmd-switches" aria-hidden="true"><span class="octicon octicon-link"></span></a>Additional command line switches</h3>
-          <div class="oe-console">
-            <pre class="oe-console">encoder@rillke.com$ opusenc infile.[wav|flac|aiff] encoded.opus
+				<!-- Command line switches -->
+				<section id="oe-command-line-options">
+					<h3><a id="opusenc.js-cmd-switches" class="anchor" href="#opusenc.js-cmd-switches" aria-hidden="true"><span class="octicon octicon-link"></span></a>Additional command line switches</h3>
+					<div class="oe-console">
+						<pre class="oe-console">encoder@rillke.com$ opusenc infile.[wav|flac|aiff] encoded.opus
   <div style="display: inline-block; padding-left: 6em;"><input name="tags" id="oe-cmd-options" value="" placeholder="(e.g. in.wav out.opus --quiet)" style="width: 100%" class="oe-console" autocomplete="off" /></div>
   </pre>
-          </div>
-        </section>
-        <div>&nbsp;</div>
+					</div>
+				</section>
+				<div>&nbsp;</div>
 
-        <!-- Run -->
-        <section id="oe-run">
-          <div style="position:relative; width: 7em; height: 5em; overflow: hidden;">
-            <button id="oe-run-button" style="position:absolute; top:0; left: 0; z-index: 0" type="button" title="Run Opusenc">Run</button>
-            <form>
-              <input id="oe-run-file" style="position:absolute; top:-30px; left: -30px; z-index: 2; font-size: 70px; cursor: pointer; opacity: 0" id="oe-cmd-fileinput" autofocus="" type="file" title="Run Opusenc" accept="audio/vnd.wave,audio/wav,audio/wave,audio/x-wav,audio/x-flac,audio/flac,audio/ogg,application/ogg,audio/x-aiff,audio/aiff,.aiff,.aif,.aifc,.ogg,.oga,.flac,.wav,.wave,.raw" autocomplete="off" />
-            </form>
-          </div>
-        </section>
-      </section>
+				<!-- Run -->
+				<section id="oe-run">
+					<div style="position:relative; width: 7em; height: 5em; overflow: hidden;">
+						<button id="oe-run-button" style="position:absolute; top:0; left: 0; z-index: 0" type="button" title="Run Opusenc">Run</button>
+						<form>
+							<input id="oe-run-file" style="position:absolute; top:-30px; left: -30px; z-index: 2; font-size: 70px; cursor: pointer; opacity: 0" id="oe-cmd-fileinput" autofocus="" type="file" title="Run Opusenc" accept="audio/vnd.wave,audio/wav,audio/wave,audio/x-wav,audio/x-flac,audio/flac,audio/ogg,application/ogg,audio/x-aiff,audio/aiff,.aiff,.aif,.aifc,.ogg,.oga,.flac,.wav,.wave,.raw" autocomplete="off" />
+						</form>
+					</div>
+				</section>
+			</section>
 
-      <!-- Ways to give  -->
+			<!-- Ways to give  -->
 			<section id="oe-credits">
 				<h2>
 <a id="opusenc.js-credits" class="anchor" href="#opusenc.js-credits" aria-hidden="true"><span class="octicon octicon-link"></span></a>Ways to give</h2>
@@ -211,45 +207,47 @@
 				</ul>
 			</section>
 
-      <!-- Comments -->
+			<!-- Comments -->
 			<section id="oe-discuss">
 				<h2>
 <a id="opusenc.js-discuss" class="anchor" href="#opusenc.js-discuss" aria-hidden="true"><span class="octicon octicon-link"></span></a>Comments</h2>
-				<div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-				<script type="text/javascript">
-					var disqus_shortname = 'rillke-blog';
+				<div id="disqus_thread" aria-live="polite">
+					<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+					</noscript>
+					<script type="text/javascript">
+						var disqus_shortname = 'rillke-blog';
 
-					// var disqus_developer = 1;
-					var disqus_identifier = 'https://blog.rillke.com/opusenc.js/';
-					var disqus_url = 'https://blog.rillke.com/opusenc.js/';
-					var disqus_script = 'embed.js';
+						// var disqus_developer = 1;
+						var disqus_identifier = 'https://blog.rillke.com/opusenc.js/';
+						var disqus_url = 'https://blog.rillke.com/opusenc.js/';
+						var disqus_script = 'embed.js';
 
-					(function() {
-						var dsq = document.createElement('script');
-						dsq.type = 'text/javascript';
-						dsq.async = true;
-						dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
-						(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-					}());
-				</script>
+						(function() {
+							var dsq = document.createElement('script');
+							dsq.type = 'text/javascript';
+							dsq.async = true;
+							dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+							(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+						}());
+					</script>
 			</section>
 
 		</section>
 	</article>
 
 	<!-- FOOTER  -->
-  <div class="ui-widget oe-js-warn">
-    <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
-      <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em; margin-top: .3em;"></span>
-      <strong>JavaScript error:</strong> Either JavaScript is still loading, it is disabled or something went terribly wrong. The demo will most likely not work. Please <a href="https://github.com/Rillke/opusenc.js/issues"><u>report this issue</u></a> so it can be fixed.</p>
-    </div>
-  </div>
-  <div class="ui-widget oe-file-warn">
-    <div class="ui-state-highlight ui-corner-all" style="padding: 0 .7em;">
-      <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em; margin-top: .3em;"></span>
-      <strong>Running from file:///</strong> When running from file:/// protocol, it might be impossible to load the worker code due to security restrictions. Chrome and Opera can be started with the <code>--allow-file-access-from-files</code> command line argument to bypass this kind of protection. However, if access from files is granted, the browser should not be used to browse other sites.</p>
-    </div>
-  </div>
+	<div class="ui-widget oe-js-warn">
+		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
+			<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em; margin-top: .3em;"></span>
+				<strong>JavaScript error:</strong> Either JavaScript is still loading, it is disabled or something went terribly wrong. The demo will most likely not work. Please <a href="https://github.com/Rillke/opusenc.js/issues"><u>report this issue</u></a> so it can be fixed.</p>
+		</div>
+	</div>
+	<div class="ui-widget oe-file-warn">
+		<div class="ui-state-highlight ui-corner-all" style="padding: 0 .7em;">
+			<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em; margin-top: .3em;"></span>
+				<strong>Running from file:///</strong> When running from file:/// protocol, it might be impossible to load the worker code due to security restrictions. Chrome and Opera can be started with the <code>--allow-file-access-from-files</code> command line argument to bypass this kind of protection. However, if access from files is granted, the browser should not be used to browse other sites.</p>
+		</div>
+	</div>
 	<div id="footer_wrap" class="outer">
 		<footer class="inner">
 			<p class="copyright">Opusenc.js maintained by <a href="https://github.com/Rillke">Rillke</a>. <a href="https://github.com/Rillke/opusenc.js/issues">Report</a> bugs, issues or feature requests.</p>
@@ -257,44 +255,45 @@
 			<section id="oe-share">
 				<h3 style="font-size:inherit; font-weight:inherit; text-decoration:none; display:inline-block; color:#F2F2F2; background:none;">
 <a id="opusenc.js-share" class="anchor" href="#opusenc.js-share" aria-hidden="true"><span class="octicon octicon-link"></span></a>Share:</h3> •
-				<a
-          href="https://www.facebook.com/sharer.php?u=https%3A%2F%2Frillke.github.io%2Fopusenc.js&t=Opusenc.js%20%3A%20JavaScript%20Opus%20Encoder">
+				<a href="https://www.facebook.com/sharer.php?u=https%3A%2F%2Frillke.github.io%2Fopusenc.js&t=Opusenc.js%20%3A%20JavaScript%20Opus%20Encoder">
             On Facebook</a> •
-				<a
-          href="https://twitter.com/share?via=WikiCommons&text=Client%20site%20Opus%20encoding&url=https%3A%2F%2Frillke.github.io%2Fopusenc.js">
+				<a href="https://twitter.com/share?via=WikiCommons&text=Client%20site%20Opus%20encoding&url=https%3A%2F%2Frillke.github.io%2Fopusenc.js">
             On Twitter</a> •
-				<a
-          href="mailto:?subject=Client%20site%20Opus%20encoding&body=https%3A%2F%2Frillke.github.io%2Fopusenc.js">
+				<a href="mailto:?subject=Client%20site%20Opus%20encoding&body=https%3A%2F%2Frillke.github.io%2Fopusenc.js">
             Via eMail</a> •
-				<a
-          href="https://plus.google.com/share?url=https%3A%2F%2Frillke.github.io%2Fopusenc.js">
+				<a href="https://plus.google.com/share?url=https%3A%2F%2Frillke.github.io%2Fopusenc.js">
             On Google+</a> •
-				<a
-          href="https://reddit.com/submit?url=https%3A%2F%2Frillke.github.io%2Fopusenc.js&title=Opusenc.js%20%3A%20JavaScript%20Opus%20Encoder">
+				<a href="https://reddit.com/submit?url=https%3A%2F%2Frillke.github.io%2Fopusenc.js&title=Opusenc.js%20%3A%20JavaScript%20Opus%20Encoder">
             On Reddit</a> •
 			</section>
 		</footer>
 	</div>
 
-  <!-- Drag & Drop info -->
-  <div class="ui-state-highlight oe-dnd-info">
-    Drop your file here!
-  </div>
+	<!-- Drag & Drop info -->
+	<div class="ui-state-highlight oe-dnd-info">
+		Drop your file here!
+	</div>
 
-  <!-- Demo JavaScript -->
-  <script src="js/sample.tags.js"></script>
+	<!-- Demo JavaScript -->
+	<script src="js/sample.tags.js"></script>
 	<script src="js/sample.js" async="async"></script>
 
-  <!-- Google Analytics -->
+	<!-- Google Analytics -->
 	<script type="text/javascript">
-		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-	</script>
-	<script type="text/javascript">
-		try {
-			var pageTracker = _gat._getTracker("UA-9724529-2");
-			pageTracker._trackPageview();
-		} catch (err) {}
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-9724529-2']);
+		_gaq.push(['_setDomainName', 'rillke.github.io']);
+		_gaq.push(['_setAllowLinker', true]);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script');
+			ga.type = 'text/javascript';
+			ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0];
+			s.parentNode.insertBefore(ga, s);
+		})();
 	</script>
 
 
