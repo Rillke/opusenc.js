@@ -3,7 +3,6 @@
 
 <head>
 	<meta charset='utf-8'>
-	<meta http-equiv="X-UA-Compatible" content="chrome=1">
 	<meta name="description" content="Opusenc.js : JavaScript Opus Encoder">
 	<link rel="shortcut icon" href="favicon.ico" />
 
@@ -21,6 +20,9 @@
 	<title>Opusenc.js</title>
 
 	<style>
+		.hidden {
+			display: none;
+		}
 		.oe-js-yes,
 		.oe-pm-yes,
 		.oe-ww-yes,
@@ -62,6 +64,9 @@
 			background: none repeat scroll 0% 0% black;
 			color: white;
 			font-family: "Lucida Console", Console, monospace;
+		}
+		.oe-console-pre {
+			white-space: pre-wrap;
 		}
 		.oe-console .tagit,
 		.oe-console input {
@@ -134,6 +139,8 @@
 			<h2 id="project_tagline">JavaScript opus encoder</h2>
 
 			<section id="downloads">
+				<!-- Make w3c's validator (and possibly search engines) happy and add a heading to this section -->
+				<h3 class="hidden">Downloads</h3>
 				<a class="zip_download_link" href="https://github.com/Rillke/opusenc.js/zipball/master">Download this project as a .zip file</a>
 				<a class="tar_download_link" href="https://github.com/Rillke/opusenc.js/tarball/master">Download this project as a tar.gz file</a>
 			</section>
@@ -142,7 +149,9 @@
 
 	<!-- MAIN CONTENT -->
 	<article id="main_content_wrap" class="outer">
+		<h2 class="hidden">Opusenc.js</h2>
 		<section id="main_content" class="inner">
+			<h2 class="hidden">What is Opusenc.js?</h2>
 			<strong>Opusenc.js</strong> is a JavaScript port of the <a href="https://mf4.xiph.org/jenkins/view/opus/job/opus-tools/ws/man/opusenc.html"><em>opusenc</em> tool</a>, which in turn is part of the <a href="//www.opus-codec.org/downloads/"><em>opus-tools</em></a> collection, created with <em>Emscripten</em>. To say it in simple words, one could <a href="https://github.com/Rillke/opusenc.js/zipball/gh-pages"><strong>download</strong> all the static files</a> making up this page and running them offline in a modern browser. No server side processing is required. Together with the sound recording API of contemporary browsers, one can not only build <em>powerful audio editing solutions</em> but also <a href="https://github.com/Rillke/Recorderjs#recorderjs"><em>sound recording tools</em></a>.
 			<br /> What is Opus and why is Opus great:
 			<blockquote>
@@ -172,20 +181,19 @@
 				<!-- Command line switches -->
 				<section id="oe-command-line-options">
 					<h3><a id="opusenc.js-cmd-switches" class="anchor" href="#opusenc.js-cmd-switches" aria-hidden="true"><span class="octicon octicon-link"></span></a>Additional command line switches</h3>
-					<div class="oe-console">
-						<pre class="oe-console">encoder@rillke.com$ opusenc infile.[wav|flac|aiff] encoded.opus
+					<div class="oe-console oe-console-pre">encoder@rillke.com$ opusenc infile.[wav|flac|aiff] encoded.opus
   <div style="display: inline-block; padding-left: 6em;"><input name="tags" id="oe-cmd-options" value="" placeholder="(e.g. in.wav out.opus --quiet)" style="width: 100%" class="oe-console" autocomplete="off" /></div>
-  </pre>
 					</div>
 				</section>
 				<div>&nbsp;</div>
 
 				<!-- Run -->
 				<section id="oe-run">
+					<h3 class="hidden">Run the demo</h3>
 					<div style="position:relative; width: 7em; height: 5em; overflow: hidden;">
 						<button id="oe-run-button" style="position:absolute; top:0; left: 0; z-index: 0" type="button" title="Run Opusenc">Run</button>
 						<form>
-							<input id="oe-run-file" style="position:absolute; top:-30px; left: -30px; z-index: 2; font-size: 70px; cursor: pointer; opacity: 0" id="oe-cmd-fileinput" autofocus="" type="file" title="Run Opusenc" accept="audio/vnd.wave,audio/wav,audio/wave,audio/x-wav,audio/x-flac,audio/flac,audio/ogg,application/ogg,audio/x-aiff,audio/aiff,.aiff,.aif,.aifc,.ogg,.oga,.flac,.wav,.wave,.raw" autocomplete="off" />
+							<input id="oe-run-file" style="position:absolute; top:-30px; left: -30px; z-index: 2; font-size: 70px; cursor: pointer; opacity: 0" autofocus="" type="file" title="Run Opusenc" accept="audio/vnd.wave,audio/wav,audio/wave,audio/x-wav,audio/x-flac,audio/flac,audio/ogg,application/ogg,audio/x-aiff,audio/aiff,.aiff,.aif,.aifc,.ogg,.oga,.flac,.wav,.wave,.raw" autocomplete="off" />
 						</form>
 					</div>
 				</section>
@@ -197,7 +205,7 @@
 <a id="opusenc.js-credits" class="anchor" href="#opusenc.js-credits" aria-hidden="true"><span class="octicon octicon-link"></span></a>Ways to give</h2>
 				<p>Opusenc made your day?</p>
 				<ul>
-					<li>Setting up this project has been made possible through an <a href="//meta.wikimedia.org/wiki/Grants:IEG">Individual Engagement Grant</a> by the Wikimedia Foundation. Donate to the <a href="https://wikimediafoundation.org/wiki/Ways_to_Give?source=opusenc:rillke">Wikimedia Foundation</a> or to <a href="https://spenden.wikimedia.de/spenden/?piwik_campaign=opusenc:rillke&piwik_kwd=Spendenaufruf">Wikimedia Germany</a>.</li>
+					<li>Setting up this project has been made possible through an <a href="//meta.wikimedia.org/wiki/Grants:IEG">Individual Engagement Grant</a> by the Wikimedia Foundation. Donate to the <a href="https://wikimediafoundation.org/wiki/Ways_to_Give?source=opusenc:rillke">Wikimedia Foundation</a> or to <a href="https://spenden.wikimedia.de/spenden/?piwik_campaign=opusenc:rillke&amp;piwik_kwd=Spendenaufruf">Wikimedia Germany</a>.</li>
 					<li>The Mozilla Foundation supported the development of Emscripten and Opus. <a href="https://sendto.mozilla.org/?source=opusenc:rillke">Donate to Mozilla</a>.</li>
 					<li>Xiph.org is <a href="//www.opus-codec.org/?source=opusenc:rillke">hosting the Opus project's infrastructure</a> and made their patents involved in Opus available so it can be used by everybody. Their developers were involved in the creation of Opus. <a href="https://xiph.org/donate/?source=opusenc:rillke">Donate to Xiph.org</a>.</li>
 					<li>Microsoft and Skype provided developer resources and their SILK patents to the creation of Opus. Microsoft doesn't appear to accept donations but you can <a href="http://www.microsoftstore.com/?source=opusenc:rillke">buy their Hard- and Software</a>.</li>
@@ -230,6 +238,7 @@
 							(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
 						}());
 					</script>
+				</div>
 			</section>
 
 		</section>
@@ -255,15 +264,15 @@
 			<section id="oe-share">
 				<h3 style="font-size:inherit; font-weight:inherit; text-decoration:none; display:inline-block; color:#F2F2F2; background:none;">
 <a id="opusenc.js-share" class="anchor" href="#opusenc.js-share" aria-hidden="true"><span class="octicon octicon-link"></span></a>Share:</h3> •
-				<a href="https://www.facebook.com/sharer.php?u=https%3A%2F%2Frillke.github.io%2Fopusenc.js&t=Opusenc.js%20%3A%20JavaScript%20Opus%20Encoder">
+				<a href="https://www.facebook.com/sharer.php?u=https%3A%2F%2Frillke.github.io%2Fopusenc.js&amp;t=Opusenc.js%20%3A%20JavaScript%20Opus%20Encoder">
             On Facebook</a> •
-				<a href="https://twitter.com/share?via=WikiCommons&text=Client%20site%20Opus%20encoding&url=https%3A%2F%2Frillke.github.io%2Fopusenc.js">
+				<a href="https://twitter.com/share?via=WikiCommons&amp;text=Client%20site%20Opus%20encoding&amp;url=https%3A%2F%2Frillke.github.io%2Fopusenc.js">
             On Twitter</a> •
-				<a href="mailto:?subject=Client%20site%20Opus%20encoding&body=https%3A%2F%2Frillke.github.io%2Fopusenc.js">
+				<a href="mailto:?subject=Client%20site%20Opus%20encoding&amp;body=https%3A%2F%2Frillke.github.io%2Fopusenc.js">
             Via eMail</a> •
 				<a href="https://plus.google.com/share?url=https%3A%2F%2Frillke.github.io%2Fopusenc.js">
             On Google+</a> •
-				<a href="https://reddit.com/submit?url=https%3A%2F%2Frillke.github.io%2Fopusenc.js&title=Opusenc.js%20%3A%20JavaScript%20Opus%20Encoder">
+				<a href="https://reddit.com/submit?url=https%3A%2F%2Frillke.github.io%2Fopusenc.js&amp;title=Opusenc.js%20%3A%20JavaScript%20Opus%20Encoder">
             On Reddit</a> •
 			</section>
 		</footer>
