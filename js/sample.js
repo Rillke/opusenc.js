@@ -27,8 +27,9 @@
 ( function( global ) {
 	'use strict';
 
-	var $button, $fileInput, $workerDlg, $workerProgress, $downloads, $console, $errors, $info, worker, lastInFile;
-	var __onDrop, __onDragOver;
+	var $button, $fileInput, $workerDlg, $workerProgress, $downloads, $console, $errors, $info, $sampleFileList;
+	var worker, lastInfile;
+	var __onDropOrPaste, __onDragOver, __onSamplefileClick;
 	var $body = $( document.body );
 	var storedFiles = {},
 		outData = {},
@@ -70,7 +71,8 @@
 			.closest( 'form' )[0]
 			.reset();
 		$body.on( {
-			drop: __onDrop,
+			drop: __onDropOrPaste,
+			paste: __onDropOrPaste,
 			dragover: __onDragOver
 		} );
 		$console.empty();
@@ -86,8 +88,8 @@
 		$errors.empty();
 		worker = new Worker( 'worker/EmsWorkerProxy.js' );
 		worker.onmessage = onWorkerMessage;
-		if ( lastInFile ) {
-			delete storedFiles[ lastInFile ];
+		if ( lastInfile ) {
+			delete storedFiles[ lastInfile ];
 		}
 	}
 
@@ -188,7 +190,7 @@
 		}, args );
 
 		if ( buffInFile ) {
-			lastInFile = inFileName;
+			lastInfile = inFileName;
 			storedFiles[ inFileName ] = new Uint8Array( buffInFile );
 			args.push( inFileName );
 			args.push( 'encoded.opus' );
@@ -205,7 +207,7 @@
 		f = f || $fileInput[ 0 ].files[ 0 ];
 		if ( f ) {
 			$fileInput.attr( 'disabled', 'disabled' );
-			$body.off( 'dragover drop' );
+			$body.off( 'dragover drop paste' );
 
 			fr.addEventListener( 'loadend', function() {
 				prepareWorkerDlg( true );
@@ -517,6 +519,122 @@
 				.focus();
 		} );
 
+	__onSamplefileClick = function( e ) {
+		var resource = $( this ).data( 'filename' ),
+			xhr = new XMLHttpRequest(),
+			$sampleDlDlg = $( '<div>' ),
+			$sampleDlProg = $workerProgress
+				.clone()
+				.appendTo( $sampleDlDlg );
+
+		e.preventDefault();
+
+		xhr.open( 'GET', 'audio/' + resource, true );
+		xhr.responseType = 'arraybuffer';
+
+		$( xhr ).on( {
+			load: function () {
+				try {
+					if ( xhr.response ) {
+						// Let's fake a file
+						var f = new Blob( [ xhr.response ] );
+						f.name = resource;
+
+						$sampleDlDlg
+							.dialog( 'close' )
+							.remove();
+
+						prepareEncode( f );
+					}
+				} catch ( ex ) {
+					$sampleDlDlg
+						.text( ex.message || ex )
+						.dialog( 'widget' )
+						.find( '.ui-dialog-titlebar' )
+						.show();
+				}
+			},
+			progress: function( e ) {
+				if ( !e.lengthComputable ) {
+					return;
+				}
+				$sampleDlProg.val( 100 * e.loaded / e.total );
+			},
+			error: function() {
+				$sampleDlDlg
+					.text( 'Loading the sample failed.' )
+					.dialog( 'widget' )
+					.find( '.ui-dialog-titlebar' )
+					.show();
+			},
+			abort: function() {
+				$sampleDlDlg
+					.text( 'Loading the sample aborted by you or your browser!' )
+					.dialog( 'widget' )
+					.find( '.ui-dialog-titlebar' )
+					.show();
+			}
+		} );
+
+		$sampleDlDlg.dialog( {
+			'title': 'Downloading audio sample ...',
+			'modal': true,
+			'closeOnEscape': false,
+			'width': 500,
+			'open': function() {
+				$( this )
+					.dialog( 'widget' )
+					.find( '.ui-dialog-titlebar' )
+					.hide();
+				$body.css( 'overflow', 'hidden' );
+			},
+			'close': function() {
+				$body.removeAttr( 'style' );
+			}
+		} );
+		xhr.send( null );
+	};
+
+	// Display sample audio files
+	$sampleFileList = $( '#oe-sample-files-list' ).empty();
+	$.each( global.audiosamples, function( name, info ) {
+		var $li = $( '<li>' );
+
+		$( '<a>' )
+			.attr( 'href', '#!' + name )
+			.attr( 'data-filename', name )
+			.text( info.info + ', ' + info.size + ' MiB' )
+			.click( __onSamplefileClick )
+			.appendTo( $li );
+
+		$li.append( '<br />' );
+
+		if ( !info.supported ) {
+			$( '<span>' )
+				.addClass( 'ui-state-error' )
+				.text( 'This file\'s format is not supported by Opusenc.js' )
+				.appendTo( $li );
+
+			$li.append( '<br />' );
+		}
+
+		if ( info.source && info.title ) {
+			$( '<a>' )
+				.attr( 'href', info.source || '' )
+				.text( 'Source: ' + info.title || '' )
+				.appendTo( $li );
+
+			$li.append( '<br />' );
+		}
+
+		$( '<span>' )
+			.addClass( 'oe-sample-file-copyright' )
+			.html( info.copyright )
+			.appendTo( $li );
+
+		$li.appendTo( $sampleFileList );
+	} );
+
    // No runtime error so far, so hide the warning
 	$( '.oe-js-warn' ).hide();
 
@@ -525,7 +643,7 @@
 		$( this ).addClass( 'oe-acceptdrop' );
 	};
 
-	__onDrop = function( e ) {
+	__onDropOrPaste = function( e ) {
 		var f = e.originalEvent.dataTransfer.files[0];
 		e.preventDefault();
 		$( this ).removeClass( 'oe-acceptdrop' );
@@ -536,7 +654,8 @@
 	// Implement drag & drop
 	$body
 		.on( {
-			drop: __onDrop,
+			drop: __onDropOrPaste,
+			paste: __onDropOrPaste,
 			dragover: __onDragOver,
 			dragleave: function () {
 				$( this ).removeClass( 'oe-acceptdrop' );
