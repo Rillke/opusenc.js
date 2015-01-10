@@ -1,5 +1,5 @@
 /*!
- * Copyright © 2014 Rainer Rillke <lastname>@wikipedia.de
+ * Copyright Â© 2014 Rainer Rillke <lastname>@wikipedia.de
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
