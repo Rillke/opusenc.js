@@ -555,6 +555,7 @@
 				}
 			},
 			progress: function( e ) {
+				e = e.originalEvent;
 				if ( !e.lengthComputable ) {
 					return;
 				}
