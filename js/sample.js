@@ -27,8 +27,8 @@
 ( function( global ) {
 	'use strict';
 
-	var $button, $fileInput, $workerDlg, $workerProgress, $downloads, $console, $errors, $info, $sampleFileList;
-	var worker, lastInfile;
+	var $button, $fileInput, $workerDlg, $workerProgress, $downloads, $console, $errors, $info, $sampleFileList, $testclip;
+	var worker, lastInfile, opusPlaybackSupported;
 	var __onDropOrPaste, __onDragOver, __onSamplefileClick;
 	var $body = $( document.body );
 	var storedFiles = {},
@@ -63,6 +63,7 @@
 		.addClass( 'oe-console-errors' );
 	$info = $( '<pre>' )
 		.addClass( 'oe-console-info' );
+	$testclip = $( '.oe-test-clip' );
 
 	function refresh() {
 		outData = {};
@@ -406,7 +407,7 @@
 
 	function onWorkerMessage( e ) {
 		/*jshint forin:false */
-		var vals, fileName, blob;
+		var vals, fileName, blob, url;
 
 		if ( !e.data ) {
 			return;
@@ -426,11 +427,12 @@
 						return;
 					}
 					blob = e.data.values[fileName].blob;
+					url = URL.createObjectURL( blob );
 
 					$( '<a>' )
 						.text( fileName )
 						.hide()
-						.prop( 'href', URL.createObjectURL( blob ) )
+						.prop( 'href', url )
 						.attr( 'download', fileName )
 						.attr( 'style', 'background: url("images/icon_download.png") no-repeat scroll left center transparent; padding-left: 28px;' )
 						.appendTo( $downloads.show() )
@@ -440,7 +442,21 @@
 							e.preventDefault();
 						} )
 						.click();
-					$downloads.append( ' ' );
+
+					if (
+						opusPlaybackSupported === 'probably'
+						&& e.data.values[fileName].MIME === 'audio/ogg'
+						&& /\.opus$/.test( fileName )
+					) {
+						$downloads.append( ' ' );
+						$testclip
+							.clone()
+							.attr( 'src', url )
+							.removeClass( 'hidden' )
+							.appendTo( $downloads )
+							.show();
+					}
+					$downloads.append( '<br />' );
 				}
 
 				cancelWorker();
@@ -666,4 +682,9 @@
 				$( this ).removeClass( 'oe-acceptdrop' );
 			}
 		} );
+
+	// Test audio support
+	try {
+		opusPlaybackSupported = $testclip[0].canPlayType( 'audio/ogg; codecs="opus"' );
+	} catch ( ex ) {}
 }( window ) );
