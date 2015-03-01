@@ -114,6 +114,12 @@
 		.oe-acceptdrop .oe-dnd-info {
 			display: block;
 		}
+		.oe-top-warning {
+			position: absolute;
+			z-index: 30;
+			top: 0px;
+			left: 0px;
+		}
 	</style>
 
 </head>
@@ -121,18 +127,6 @@
 <body>
 	<!-- HEADER -->
 	<div id="header_wrap" class="outer">
-		<div class="ui-widget oe-js-warn">
-			<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
-				<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em; margin-top: .3em;"></span>
-					<strong>JavaScript error:</strong> Either JavaScript is still loading, it is disabled or something went terribly wrong. The demo will most likely not work. Please <a href="https://github.com/Rillke/opusenc.js/issues"><u>report this issue</u></a> so it can be fixed.</p>
-			</div>
-		</div>
-		<div class="ui-widget oe-file-warn">
-			<div class="ui-state-highlight ui-corner-all" style="padding: 0 .7em;">
-				<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em; margin-top: .3em;"></span>
-					<strong>Running from file:///</strong> When running from file:/// protocol, it might be impossible to load the worker code due to security restrictions. Chrome and Opera can be started with the <code>--allow-file-access-from-files</code> command line argument to bypass this kind of protection. However, if access from files is granted, the browser should not be used to browse other sites.</p>
-			</div>
-		</div>
 		<header class="inner">
 			<a id="forkme_banner" href="https://github.com/Rillke/opusenc.js">View on GitHub</a>
 
@@ -252,6 +246,21 @@
 
 		</section>
 	</article>
+
+	<div class="oe-top-warning">
+		<div class="ui-widget oe-js-warn">
+			<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
+				<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em; margin-top: .3em;"></span>
+					<strong>JavaScript error:</strong> Either JavaScript is still loading, it is disabled or something went terribly wrong. The demo will most likely not work. Please <a href="https://github.com/Rillke/opusenc.js/issues"><u>report this issue</u></a> so it can be fixed.</p>
+			</div>
+		</div>
+		<div class="ui-widget oe-file-warn">
+			<div class="ui-state-highlight ui-corner-all" style="padding: 0 .7em;">
+				<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em; margin-top: .3em;"></span>
+					<strong>Running from file:///</strong> When running from file:/// protocol, it might be impossible to load the worker code due to security restrictions. Chrome and Opera can be started with the <code>--allow-file-access-from-files</code> command line argument to bypass this kind of protection. However, if access from files is granted, the browser should not be used to browse other sites.</p>
+			</div>
+		</div>
+	</div>
 
 	<!-- FOOTER  -->
 	<div class="ui-widget oe-js-warn">
