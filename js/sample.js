@@ -223,15 +223,26 @@
 		}
 	}
 
-	function showHideFileInput() {
-		$fileInput.show();
+	function doArgsContainNoinputfile() {
+		var retval = false;
+
 		forEachArg( function( arg, isSwitch, cleanArg, argInfo ) {
 			argInfo = allTags[ arg ];
 			if ( argInfo && argInfo.noinputfile ) {
-				$fileInput.hide();
+				retval = true;
 				return false;
 			}
 		} );
+
+		return retval;
+	}
+
+	function showHideFileInput() {
+		if ( doArgsContainNoinputfile() ) {
+			$fileInput.hide();
+		} else {
+			$fileInput.show();
+		}
 	}
 
 	function beforeRemovedTag( e, ui ) {
