@@ -1,0 +1,111 @@
+.hidden {
+  display: none;
+}
+.oe-reset {
+  margin:0;
+  padding:0;
+  border:0;
+  outline:0;
+  font-size:100%;
+  vertical-align:baseline;
+  background:transparent;
+  display: inline;
+  font-weight: inherit;
+}
+.oe-js-yes,
+.oe-pm-yes,
+.oe-ww-yes,
+.oe-bc-yes {
+  display: none;
+}
+.oe-js-no,
+.oe-pm-no,
+.oe-ww-no,
+.oe-bc-no {
+  display: inline-block;
+}
+.js .oe-js-no,
+.postmessage .oe-pm-no,
+.webworkers .oe-ww-no,
+.blobconstructor .oe-bc-no {
+  display: none;
+}
+.js .oe-js-yes,
+.postmessage .oe-pm-yes,
+.webworkers .oe-ww-yes,
+.blobconstructor .oe-bc-yes {
+  display: inline-block;
+}
+.ui-autocomplete {
+  overflow: auto;
+  max-height: 13em;
+}
+.ui-menu-item,
+.oe-console {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+.oe-console,
+.oe-console .tagit,
+.oe-console input,
+.oe-console pre {
+  background: none repeat scroll 0% 0% black;
+  color: white;
+  font-family: "Lucida Console", Console, monospace;
+}
+.oe-console-pre {
+  white-space: pre-wrap;
+}
+.oe-console .tagit,
+.oe-console input {
+  border: none;
+}
+.ui-menu-item.ui-state-focus {
+  margin: -1px 0px;
+}
+.oe-progress-dialog {
+  box-shadow: 0px 0px 15px #000;
+}
+.tagit-new input {
+  min-width: 15em;
+}
+pre.oe-console-errors {
+  color: #FF7373;
+}
+.oe-browser-support-check {
+  white-space: nowrap;
+}
+.oe-console-info,
+.oe-console-errors {
+  width: 100%;
+  border: medium none;
+  padding: 0px;
+  white-space: pre-wrap;
+  resize: none;
+}
+.oe-file-warn {
+  display: none;
+}
+body.oe-acceptdrop #main_content_wrap {
+  background-color: #B7D9E0;
+}
+.oe-dnd-info {
+  position: fixed;
+  padding: 4em;
+  top: 50%;
+  left: 50%;
+  margin-left: -6em;
+  margin-top: -4.5em;
+  font-size: 2em;
+  display: none;
+}
+.oe-acceptdrop .oe-dnd-info {
+  display: block;
+}
+.oe-top-warning {
+  position: absolute;
+  z-index: 30;
+  top: 0px;
+  left: 0px;
+}

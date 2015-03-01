@@ -19,109 +19,7 @@
 
 	<title>Opusenc.js</title>
 
-	<style>
-		.hidden {
-			display: none;
-		}
-		.oe-js-yes,
-		.oe-pm-yes,
-		.oe-ww-yes,
-		.oe-bc-yes {
-			display: none;
-		}
-		.oe-js-no,
-		.oe-pm-no,
-		.oe-ww-no,
-		.oe-bc-no {
-			display: inline-block;
-		}
-		.js .oe-js-no,
-		.postmessage .oe-pm-no,
-		.webworkers .oe-ww-no,
-		.blobconstructor .oe-bc-no {
-			display: none;
-		}
-		.js .oe-js-yes,
-		.postmessage .oe-pm-yes,
-		.webworkers .oe-ww-yes,
-		.blobconstructor .oe-bc-yes {
-			display: inline-block;
-		}
-		.ui-autocomplete {
-			overflow: auto;
-			max-height: 13em;
-		}
-		.ui-menu-item,
-		.oe-console {
-			box-sizing: border-box;
-			-moz-box-sizing: border-box;
-			-webkit-box-sizing: border-box;
-		}
-		.oe-console,
-		.oe-console .tagit,
-		.oe-console input,
-		.oe-console pre {
-			background: none repeat scroll 0% 0% black;
-			color: white;
-			font-family: "Lucida Console", Console, monospace;
-		}
-		.oe-console-pre {
-			white-space: pre-wrap;
-		}
-		.oe-console .tagit,
-		.oe-console input {
-			border: none;
-		}
-		.ui-menu-item.ui-state-focus {
-			margin: -1px 0px;
-		}
-		.oe-progress-dialog {
-			box-shadow: 0px 0px 15px #000;
-		}
-		.tagit-new input {
-			min-width: 15em;
-		}
-		pre.oe-console-errors {
-			color: #FF7373;
-		}
-		.oe-browser-support-check {
-			white-space: nowrap;
-		}
-		.oe-console-info,
-		.oe-console-errors {
-			width: 100%;
-			border: medium none;
-			padding: 0px;
-			white-space: pre-wrap;
-			resize: none;
-		}
-		.oe-file-warn {
-			display: none;
-		}
-		body.oe-acceptdrop #main_content_wrap {
-			background-color: #B7D9E0;
-		}
-		.oe-dnd-info {
-			position: fixed;
-			padding: 4em;
-			top: 50%;
-			left: 50%;
-			margin-left: -6em;
-			margin-top: -4.5em;
-			font-size: 2em;
-			display: none;
-		}
-		.oe-acceptdrop .oe-dnd-info {
-			display: block;
-		}
-		.oe-top-warning {
-			position: absolute;
-			z-index: 30;
-			top: 0px;
-			left: 0px;
-		}
-	</style>
-
+	<link href="css/sample.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
@@ -280,8 +178,8 @@
 			<p class="copyright">Opusenc.js maintained by <a href="https://github.com/Rillke">Rillke</a>. <a href="https://github.com/Rillke/opusenc.js/issues">Report</a> bugs, issues or feature requests.</p>
 
 			<section id="oe-share">
-				<h3 style="font-size:inherit; font-weight:inherit; text-decoration:none; display:inline-block; color:#F2F2F2; background:none;">
-<a id="opusenc.js-share" class="anchor" href="#opusenc.js-share" aria-hidden="true"><span class="octicon octicon-link"></span></a>Share:</h3> •
+				<h4 style="color:#F2F2F2;">
+<a id="opusenc.js-share" class="anchor" href="#opusenc.js-share" aria-hidden="true"><span class="octicon octicon-link"></span></a>Share</h3>
 				<a href="https://www.facebook.com/sharer.php?u=https%3A%2F%2Frillke.github.io%2Fopusenc.js&amp;t=Opusenc.js%20%3A%20JavaScript%20Opus%20Encoder">
             On Facebook</a> •
 				<a href="https://twitter.com/share?via=WikiCommons&amp;text=Client%20site%20Opus%20encoding&amp;url=https%3A%2F%2Frillke.github.io%2Fopusenc.js">
@@ -291,7 +189,26 @@
 				<a href="https://plus.google.com/share?url=https%3A%2F%2Frillke.github.io%2Fopusenc.js">
             On Google+</a> •
 				<a href="https://reddit.com/submit?url=https%3A%2F%2Frillke.github.io%2Fopusenc.js&amp;title=Opusenc.js%20%3A%20JavaScript%20Opus%20Encoder">
-            On Reddit</a> •
+            On Reddit</a>
+			</section>
+			<section id="oe-more">
+				<h4 style="color:#F2F2F2;">
+<a id="opusenc.js-more" class="anchor" href="#opusenc.js-share" aria-hidden="true"><span class="octicon octicon-link"></span></a>Discover more</h3>
+				<!--
+				<a href="//blog.rillke.com/opusenc-stream.js">
+            Opusenc-stream.js</a> •
+				-->
+				<a href="//blog.rillke.com/flac.js">
+            Flac.js</a><!-- •
+				<a href="//blog.rillke.com/flac-stream.js">
+            Flac-stream.js</a> •
+				<a href="//blog.rillke.com/ogg-vorbis.js">
+            Ogg-Vorbis.js</a> •
+				<a href="//blog.rillke.com/wave-metadata.js">
+            Wave file metadata writer</a> •
+				<a href="//blog.rillke.com/prg">
+            Pronunciation Recording Gadget</a>
+				-->
 			</section>
 		</footer>
 	</div>
