@@ -4,16 +4,16 @@
 
 [**Project Website**](https://blog.rillke.com/opusenc.js/) • [Minimal demo](https://rawgit.com/Rillke/opusenc.js/master/iframe.html)
 
-Opusenc.js encodes whole files to ogg-opus; this is Opus encapsulated into an Ogg container. It is supposed to do the same as the opusenc tools from the opus-tools collection and as such supports features like Vorbis comment, preserving some metadata, reading AIF, WAV, and FLAC (in its native container).
+Opusenc.js encodes whole files to ogg-opus; this is Opus encapsulated into an Ogg container. It is supposed to do the same as the opusenc tool from the [opus-tools](http://opus-codec.org/downloads/) collection and as such supports features like Vorbis comment, preserving some metadata, reading AIF, WAV, and FLAC (in its native container).
 
-opusenc.js was built with Emscripten.
+This version of opusenc.js was built with Emscripten 1.37.20; flac 1.3.2; libogg 1.3.3; opus v1.2.1; opus-tools v0.1.10
 
 ## Building
 If you just want to use opusenc.js, you don't have to build it. In this case, see [using](#using) instead.
 
 ### Prerequisites
 - A recent linux build system
-- Emscripten 1.25.0 installed and activated
+- Emscripten installed and activated
 
 ### Build script
 ```bash
