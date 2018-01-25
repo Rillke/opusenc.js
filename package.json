@@ -1,6 +1,6 @@
 {
   "name": "opusenc.js",
-  "version": "0.0.1",
+  "version": "0.1.10",
   "description": "JavaScript Opus (audio format) Encoder",
   "keywords": [
     "plugin"
@@ -11,6 +11,7 @@
     "url": "git://github.com/Rillke/opusenc.js.git"
   },
   "bugs": "https://github.com/Rillke/opusenc.js/issues",
+  "license": "C.f. https://github.com/Rillke/opusenc.js/blob/master/LICENSE.md",
   "licenses": [
     {
       "type": "MIT",
