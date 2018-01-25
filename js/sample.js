@@ -663,8 +663,9 @@
 		$li.appendTo( $sampleFileList );
 	} );
 
-   // No runtime error so far, so hide the warning
+	// No runtime error so far, so hide the warning
 	$( '.oe-js-warn' ).hide();
+	$( 'html' ).addClass( 'js' + ( window.WebAssembly ? ' webassembly' : '' ) );
 
 	__onDragOver = function( e ) {
 		e.preventDefault();

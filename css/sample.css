@@ -15,25 +15,29 @@
 .oe-js-yes,
 .oe-pm-yes,
 .oe-ww-yes,
-.oe-bc-yes {
+.oe-bc-yes,
+.oe-wa-yes {
   display: none;
 }
 .oe-js-no,
 .oe-pm-no,
 .oe-ww-no,
-.oe-bc-no {
+.oe-bc-no,
+.oe-wa-no {
   display: inline-block;
 }
 .js .oe-js-no,
 .postmessage .oe-pm-no,
 .webworkers .oe-ww-no,
-.blobconstructor .oe-bc-no {
+.blobconstructor .oe-bc-no,
+.webassembly .oe-wa-no {
   display: none;
 }
 .js .oe-js-yes,
 .postmessage .oe-pm-yes,
 .webworkers .oe-ww-yes,
-.blobconstructor .oe-bc-yes {
+.blobconstructor .oe-bc-yes,
+.webassembly .oe-wa-yes {
   display: inline-block;
 }
 .ui-autocomplete {

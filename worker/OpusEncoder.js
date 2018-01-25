@@ -20,7 +20,7 @@
  * IN THE SOFTWARE.
  */
 
-/*global self: false, Runtime: false, OpusEncoder: false, Module: false, FS: false, EmsArgs: false, console: false */
+/*global self: false, Runtime: false, OpusEncoder: false, Module: false, FS: false, EmsArgs: false, console: false, WebAssembly: false */
 /*jslint vars: false,  white: false */
 /*jshint onevar: false, white: false, laxbreak: true, worker: true, strict: false */
 
@@ -130,7 +130,9 @@
 					console.log( 'Loading run dependencies. Outstanding: ' + runDeps );
 				},
 				locateFile: function( memFile ) {
-					return memFile.replace( /^opusenc\.(html|js)\.mem$/, 'opusenc.data.js' );
+					return memFile
+						.replace( /^opusenc\.(html|js)\.mem$/, 'asm/opusenc.mem.png' )
+						.replace( 'opusenc.wasm', 'wasm/opusenc.wasm.png' );
 				}
 			};
 		},
@@ -294,7 +296,7 @@
 	 *  @private
 	 */
 	MainScriptLoader = {
-		name: 'opusenc.js',
+		name: ( global.WebAssembly ? 'wasm/' : 'asm/' ) + 'opusenc.js',
 		text: null,
 		status: 'idle',
 		xhrload: function( data, complete, err ) {
