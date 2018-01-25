@@ -8,6 +8,8 @@ Opusenc.js encodes whole files to ogg-opus; this is Opus encapsulated into an Og
 
 This version of opusenc.js was built with Emscripten 1.37.20; flac 1.3.2; libogg 1.3.3; opus v1.2.1; opus-tools v0.1.10
 
+If the browser supports WebAssembly, that is used although it might be even slower and produce larger files compared to asm.js created files. The reason is currently investigated on; if you know, please enlight me.
+
 ## Building
 If you just want to use opusenc.js, you don't have to build it. In this case, see [using](#using) instead.
 
