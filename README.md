@@ -19,9 +19,8 @@ If you just want to use opusenc.js, you don't have to build it. In this case, se
 
 ### Build script
 ```bash
-git clone git://github.com/Rillke/opusenc.js.git opusenc.js
+git clone --recursive git://github.com/Rillke/opusenc.js.git opusenc.js
 cd opusenc.js
-git submodule update --init
 ./make.sh
 ```
 
