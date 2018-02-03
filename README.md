@@ -67,3 +67,18 @@ Submit patches to this GitHub repository or [file issues](https://github.com/Ril
 
 ## License
 See [LICENSE.md](LICENSE.md)
+
+## Open source Opus JS ports
+
+| Implementation | Primary focus | Implementation details |
+| -------------- |:-------------:| ----------------------:|
+| [opusenc.js](https://github.com/Rillke/opusenc.js) | JS-Port of the opusenc command line tool (encoding from and to files); encoding larger but not huge chunks of audio to Ogg-Opus files, showcase/Opus evangelism | Written in JS; Emscripten hybrid WASM with asm.js fallback; building on Xiph.org's opusenc (which is part of opus tools) |
+| [opus.js-sample](https://github.com/kazuki/opus.js-sample) | De-, encoder and resampler for raw Opus (without container) | Written in Typescript; Web-Worker; codec and resampler ported with Emscripten to asm.js; building on Xiph.org's reference implementation of opus en-/decoder |
+| [opus-recorder](https://github.com/chris-rudmin/opus-recorder) | Recorder (audio source like microphone); Ogg-Opus de-and encoder and resampler | Custom Ogg implementation purely in JS; npm and bower packaging; building on Xiph.org's reference implementation of opus and speexdsp; new versions WASM-only; Old versions asm.js-only |
+| [audiocogs/opus.js](https://github.com/audiocogs/opus.js) | Modular system decoding and playing Ogg-Opus as well as a lot of other audio formats (any if an appropriate plugin is available) | aurora.js (CoffeeScript) plugin; building on Xiph.org's reference implementation of opus; npm packaging; asm.js which is not labeled as such |
+| [howler.js](https://github.com/goldfire/howler.js) | Audio playback shim with special effects (probably good for games) | Pure JavaScript; no Opus support compiled into; uses browser APIs for decoding and playback |
+| [opus-stream.js](https://github.com/Rillke/opus-stream.js) | Opus streaming solution with de-/encoding and resampling support offering raw and packaged streaming with adjustable buffer sizes; server-side example component | Emscripten hybrid WASM with asm.js fallback, npm and bower packaging |
+
+## Losless audio codec required?
+
+Try [flac.js](https://github.com/Rillke/flac.js).
