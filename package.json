@@ -1,23 +1,14 @@
 {
   "name": "opusenc.js",
   "version": "0.1.10",
-  "description": "JavaScript Opus (audio format) Encoder",
+  "description": "JavaScript Opus (audio format) Encoder (front-end package only)",
   "keywords": [
-    "plugin"
+    "opus", "opusenc", "lossy", "audio", "codec", "emscripten"
   ],
-  "homepage": "https://rillke.github.io/opusenc.js",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/Rillke/opusenc.js.git"
-  },
+  "homepage": "https://blog.rillke.com/opusenc.js/",
+  "repository": "github:Rillke/opusenc.js",
   "bugs": "https://github.com/Rillke/opusenc.js/issues",
   "license": "C.f. https://github.com/Rillke/opusenc.js/blob/master/LICENSE.md",
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://mit-license.org/"
-    }
-  ],
   "author": {
     "name": "Rainer Rillke",
     "web": "https://rillke.com"
@@ -25,7 +16,6 @@
   "contributors": [
     "Rainer Rillke (https://rillke.com/)"
   ],
-  "main": "./recorder.js",
   "scripts": {
     "test": "grunt test && node test/node-index.js"
   },
