@@ -1,5 +1,5 @@
 /*!
- * Copyright © 2014 Rainer Rillke <lastname>@wikipedia.de
+ * Copyright © 2014, 2019 Rainer Rillke <lastname>@wikipedia.de
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,7 +20,7 @@
  * IN THE SOFTWARE.
  */
 
-/*global tags: false, console: false, URL: false, saveAs: false, alert: false*/
+/*global tags: false, console: false, URL: false, saveAs: false, alert: false, sanitizeFilename: false */
 /*jslint vars: false,  white: false */
 /*jshint onevar: false, white: false, laxbreak: true, worker: true */
 
@@ -165,9 +165,14 @@
 			return cb( arg, reSwitch.test( arg ), argClean, tags[ argClean ] );
 		} );
 	}
+	function getOutFileName( inFileName ) {
+		var outFileName = inFileName.replace( /\.\w{1,8}$/, '' );
+		outFileName = sanitizeFilename( outFileName || 'encoded' );
+		return outFileName + '.opus';
+	}
 	function getArgs( buffInFile, inFileName ) {
 		var args = $cmd.tagit( 'assignedTags' ),
-			pastArg;
+			pastArg, outFileName;
 
 		forEachArg( function( arg, isSwitch, cleanArg, argInfo ) {
 			var logMessage;
@@ -192,10 +197,11 @@
 
 		if ( buffInFile ) {
 			lastInfile = inFileName;
+			outFileName = getOutFileName( inFileName );
 			storedFiles[ inFileName ] = new Uint8Array( buffInFile );
 			args.push( inFileName );
-			args.push( 'encoded.opus' );
-			outData[ 'encoded.opus' ] = {
+			args.push( outFileName );
+			outData[ outFileName ] = {
 				'MIME': 'audio/ogg'
 			};
 		}
