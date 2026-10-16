@@ -1,4 +1,4 @@
-# opusenc.js [![Build Status](https://travis-ci.org/Rillke/opusenc.js.svg?branch=master)](https://travis-ci.org/Rillke/opusenc.js)
+# opusenc.js [![CI](https://github.com/Rillke/opusenc.js/actions/workflows/ci.yml/badge.svg)](https://github.com/Rillke/opusenc.js/actions/workflows/ci.yml)
 
 ## JavaScript Opus (audio format) Encoder
 
@@ -6,23 +6,24 @@
 
 Opusenc.js encodes whole files to ogg-opus; this is Opus encapsulated into an Ogg container. It is supposed to do the same as the opusenc tool from the [opus-tools](http://opus-codec.org/downloads/) collection and as such supports features like Vorbis comment, preserving some metadata, reading AIF, WAV, and FLAC (in its native container).
 
-This version of opusenc.js was built with Emscripten 1.37.20; flac 1.3.2; libogg 1.3.3; opus v1.2.1; opus-tools v0.1.10
+This version of opusenc.js was built with Emscripten 6.0.12; flac 1.5.0; libogg 1.3.6; opus 1.6.1; libopusenc 0.3; opus-tools 0.2
 
-If the browser supports WebAssembly, that is used although it might be even slower and produce larger files compared to asm.js created files. The reason is currently investigated on; if you know, please enlight me.
+If the browser supports WebAssembly, that is used. Otherwise, a pure JavaScript build (created with wasm2js) is used as a fallback.
 
 ## Building
 If you just want to use opusenc.js, you don't have to build it. In this case, see [using](#using) instead.
 
 ### Prerequisites
-- A recent linux build system
-- Emscripten installed and activated
+- A recent linux build system including autoconf, automake, libtool, gettext/autopoint and pkg-config
+- [Emscripten](https://emscripten.org/docs/getting_started/downloads.html) installed and activated
 
 ### Build script
 ```bash
-git clone --recursive git://github.com/Rillke/opusenc.js.git opusenc.js
+git clone --recursive https://github.com/Rillke/opusenc.js.git opusenc.js
 cd opusenc.js
 ./make.sh
 ```
+After building, `make.sh` serves the demo using `emrun`; pass `--no-run` to skip this.
 
 ## Using
 A pre-compiled script together with some auxiliary scripts making use from JavaScript easier is in the `/worker` directory.
