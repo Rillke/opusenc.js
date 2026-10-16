@@ -51,7 +51,7 @@
 			// $input is a file input
 			// when its value changed, the user most likely
 			// inserted a file
-			$input.change(function() {
+			$input.on('change', function() {
 				// Get the file supplied by the user
 				// and create a FileReader to get its
 				// contents as ArrayBuffer

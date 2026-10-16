@@ -21,12 +21,8 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "coveralls": "~2.11.2",
-    "qunit": "~0.5.15",
-    "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.4.3",
-    "grunt-contrib-qunit": "~0.2.1",
-    "grunt-jsduck": "~0.1.4",
-    "qunitjs": "~1.11.0"
+    "grunt": "^1.6.3",
+    "grunt-contrib-jshint": "^3.2.0",
+    "qunit": "^3.0.0"
   }
 }
