@@ -63,6 +63,15 @@ worker.postMessage( {
 
 A more extensive example is available on the [project's website](https://blog.rillke.com/opusenc.js/).
 
+## Testing
+```bash
+npm install
+npm test                         # Lint
+npx playwright install chromium  # Once, or use firefox / webkit too
+npm run test:browser             # Encode files in real browsers
+```
+The browser tests in [test/browser](test/browser) run opusenc.js in Chromium, Firefox and WebKit using [Playwright](https://playwright.dev/). They encode WAV, AIFF and FLAC files with the worker, validate the resulting Ogg Opus files, decode them with the browser's own decoder, and exercise the demo page. They run on GitHub Actions against both the committed build and a fresh build.
+
 ## Contributing
 Submit patches to this GitHub repository or [file issues](https://github.com/Rillke/opusenc.js/issues).
 

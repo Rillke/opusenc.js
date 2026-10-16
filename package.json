@@ -17,10 +17,12 @@
     "Rainer Rillke (https://rillke.com/)"
   ],
   "scripts": {
-    "test": "grunt test && node test/node-index.js"
+    "test": "grunt test && node test/node-index.js",
+    "test:browser": "playwright test"
   },
   "dependencies": {},
   "devDependencies": {
+    "@playwright/test": "^1.64.0",
     "grunt": "^1.6.3",
     "grunt-contrib-jshint": "^3.2.0",
     "qunit": "^3.0.0"
