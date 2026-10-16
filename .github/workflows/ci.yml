@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  EMSDK_VERSION: 6.0.12
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - run: npm install
+
+      - run: npm test
+
+  build:
+    name: Build with Emscripten
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+          # Full history so the libraries can derive their version from git
+          fetch-depth: 0
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            autoconf automake autopoint gettext libtool libtool-bin pkg-config
+
+      - name: Cache Emscripten SDK
+        id: cache-emsdk
+        uses: actions/cache@v6
+        with:
+          path: emsdk-cache
+          key: emsdk-${{ env.EMSDK_VERSION }}-${{ runner.os }}
+
+      - name: Install Emscripten SDK
+        if: steps.cache-emsdk.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git emsdk-cache
+          emsdk-cache/emsdk install "$EMSDK_VERSION"
+
+      - name: Build
+        run: |
+          emsdk-cache/emsdk activate "$EMSDK_VERSION"
+          source emsdk-cache/emsdk_env.sh
+          ./make.sh --no-run
+
+      - name: Show changes compared to the committed build
+        run: git status --short worker/
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: opusenc.js
+          path: |
+            iframe.html
+            jquery.min.js
+            worker/
