@@ -259,6 +259,10 @@
 				try {
 					encode_buffer( args.length, pointerHeap.byteOffset, fPointer );
 				} catch ( ex ) {
+					// Deliver what was written to stdout/stderr before e.g. exit()
+					// was called; it usually explains the failure.
+					OpusEncoder.flushInfo();
+					OpusEncoder.flushErr();
 					console.error( ex.message || ex );
 				}
 			} );
