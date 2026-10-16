@@ -20,7 +20,7 @@
  * IN THE SOFTWARE.
  */
 
-/*global self: false, Runtime: false, OpusEncoder: false, Module: false, FS: false, EmsArgs: false, console: false, WebAssembly: false */
+/*global self: false, OpusEncoder: false, Module: false, EmsArgs: false, console: false, WebAssembly: false */
 /*jslint vars: false,  white: false */
 /*jshint onevar: false, white: false, laxbreak: true, worker: true, strict: false */
 
@@ -44,7 +44,7 @@
 				if ( !global.EmsArgs ){
 					importScripts( 'EmsArgs.js' );
 				}
-				OpusEncoder.setUpModule( data );
+				OpusEncoder.setUpModule();
 			}, function() {
 				// After the main script was executed ...
 				MainScriptLoader.whenInitialized( function() {
@@ -54,7 +54,7 @@
 		},
 
 		prefetch: function( data ) {
-			if ( global.Module && global.EmsArgs && global.Runtime ) {
+			if ( global.Module && global.EmsArgs && global.Module.FS ) {
 				return;
 			}
 			OpusEncoder.setUpLogging( data );
@@ -98,41 +98,17 @@
 			};
 		},
 
-		setUpModule: function( data ) {
-			/*jshint forin:false */
-			var totalFileLength = 0,
-				filename, memRequired;
-
-			for ( filename in data.fileData ) {
-				if ( !data.fileData.hasOwnProperty( filename ) ) {
-					return;
-				}
-				var fileData = data.fileData[filename];
-
-				totalFileLength += fileData.length;
-			}
-
-			memRequired = totalFileLength * 2 + 0x1000000;
-			// Currently "The asm.js rules specify that the heap size must be
-			// a multiple of 16MB or a power of two. Minimum heap size is 64KB"
-			// If we don't correct it here asm will dump errors on us while adjusting
-			// the number but we would ignore following the error and shut down the
-			// worker due to this error
-			memRequired = memRequired - ( memRequired % 0x1000000 ) + 0x1000000;
-
+		setUpModule: function() {
+			// Memory is grown on demand (ALLOW_MEMORY_GROWTH)
 			global.Module = {
-				TOTAL_MEMORY: memRequired,
-				_main: MainScriptLoader.initialized,
-				noExitRuntime: true,
+				onRuntimeInitialized: MainScriptLoader.initialized,
 				preRun: OpusEncoder.setUpFilesystem,
 				printErr: console.error.bind( console ),
 				monitorRunDependencies: function( runDeps ) {
 					console.log( 'Loading run dependencies. Outstanding: ' + runDeps );
 				},
-				locateFile: function( memFile ) {
-					return memFile
-						.replace( /^opusenc\.(html|js)\.mem$/, 'asm/opusenc.mem.png' )
-						.replace( 'opusenc.wasm', 'wasm/opusenc.wasm.png' );
+				locateFile: function( file ) {
+					return file.replace( /^opusenc\.wasm$/, 'wasm/opusenc.wasm.png' );
 				}
 			};
 		},
@@ -161,7 +137,7 @@
 				}
 			};
 
-			FS.init( global.prompt || function() {
+			Module.FS.init( global.prompt || function() {
 				console.log( 'Input requested from within web worker. Returning empty string.' );
 				return '';
 			}, function( infoChar ) {
@@ -214,7 +190,8 @@
 			var fPointer;
 
 			// Get a pointer for the callback function
-			fPointer = Runtime.addFunction( function( encoded, total, seconds ) {
+			// C signature: void (*progress)( int encoded, int total, double seconds )
+			fPointer = Module.addFunction( function( encoded, total, seconds ) {
 				var filename, fileContent, b;
 
 				// We *know* that writing to to stdin and/or stderr completed
@@ -227,7 +204,7 @@
 						if ( !data.outData.hasOwnProperty( filename ) ) {
 							return;
 						}
-						fileContent = FS.readFile( filename, {
+						fileContent = Module.FS.readFile( filename, {
 							encoding: 'binary'
 						} );
 						b = new Blob(
@@ -242,7 +219,7 @@
 						Array.prototype.slice.call( arguments )
 					);
 				}
-			} );
+			}, 'viid' );
 
 			// Set module arguments (command line arguments)
 			var args = data.args,
@@ -260,10 +237,10 @@
 					return;
 				}
 				var fileData = data.fileData[filename],
-					stream = FS.open( filename, 'w+' );
+					stream = Module.FS.open( filename, 'w+' );
 
-				FS.write( stream, fileData, 0, fileData.length );
-				FS.close( stream );
+				Module.FS.write( stream, fileData, 0, fileData.length );
+				Module.FS.close( stream );
 			}
 
 			// Create output files
@@ -271,7 +248,7 @@
 				if ( !data.outData.hasOwnProperty( filename ) ) {
 					return;
 				}
-				FS.close( FS.open( filename, 'w+' ) );
+				Module.FS.close( Module.FS.open( filename, 'w+' ) );
 			}
 
 			// Prepare C function to be called
@@ -280,7 +257,6 @@
 			// Copy command line args to Emscripten Heap and get a pointer to them
 			EmsArgs.cArgsPointer( args, function( pointerHeap ) {
 				try {
-					global.Module.noExitRuntime = false;
 					encode_buffer( args.length, pointerHeap.byteOffset, fPointer );
 				} catch ( ex ) {
 					console.error( ex.message || ex );
@@ -421,9 +397,7 @@
 		var Module = global.Module,
 			ret = eval( s );
 
-		global.FS = FS;
 		global.Module = Module;
-		global.Runtime = Runtime;
 		return ret;
 	};
 }( self ) );

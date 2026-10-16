@@ -10,4 +10,6 @@
 [submodule "libogg"]
 	path = libogg
 	url = ../libogg.git
-
+[submodule "libopusenc"]
+	path = libopusenc
+	url = https://github.com/xiph/libopusenc.git
